@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.code_oAnQuan</groupId>
+  <artifactId>OAnQuanMaven</artifactId>
+  <version>1.0.0</version>
+  <dependencies>
+    <!-- 1. JavaFX Base (Cốt lõi) -->
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-base</artifactId>
+        <version>${javafx.version}</version>
+    </dependency>
+
+    <!-- 2. JavaFX Graphics (Xử lý đồ họa, Canvas, Scene) -->
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-graphics</artifactId>
+        <version>${javafx.version}</version>
+    </dependency>
+
+    <!-- 3. JavaFX Controls (Nút bấm, bảng, giao diện người dùng) -->
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-controls</artifactId>
+        <version>${javafx.version}</version>
+    </dependency>
+
+    <!-- 4. JavaFX FXML (Load giao diện từ file .fxml) -->
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-fxml</artifactId>
+        <version>${javafx.version}</version>
+    </dependency>
+
+    <!-- 5. JavaFX Media (Phát nhạc, video) -->
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-media</artifactId>
+        <version>${javafx.version}</version>
+    </dependency>
+
+    <!-- 6. JavaFX Swing (Tích hợp JavaFX vào Swing hoặc ngược lại) -->
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-swing</artifactId>
+        <version>${javafx.version}</version>
+    </dependency>
+
+    <!-- 7. JavaFX Web (Hiển thị nội dung Web/HTML5) -->
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-web</artifactId>
+        <version>${javafx.version}</version>
+    </dependency>
+
+</dependencies>
+
+<build>
+        <plugins>
+            <!-- Plugin biên dịch: Phải dùng bản 3.13.0 trở lên để hỗ trợ Java mới -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <release>23</release>
+                </configuration>
+            </plugin>
+
+            <!-- Plugin chạy JavaFX -->
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <!-- Thay bằng đường dẫn class chính của bạn -->
+                    <mainClass>com.code.Main</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+ </build>
+    
+ <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Cấu hình cho JDK 24 -->
+        <maven.compiler.source>23</maven.compiler.source>
+        <maven.compiler.target>23</maven.compiler.target>
+        
+        <javafx.version>25.0.1</javafx.version> 
+</properties>
+</project>
