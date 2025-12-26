@@ -57,6 +57,7 @@ public class OAnQuanGame {
             switchTurn();
             checkAndRefillEmptySquares(); 
         }
+        
 
         return true;
     }

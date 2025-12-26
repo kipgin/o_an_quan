@@ -2,20 +2,24 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Polygon?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<StackPane fx:id="rootPane" prefHeight="120.0" prefWidth="100.0" stylesheets="@../../../css/square_style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.code.controller.SquareController">
+<StackPane fx:id="rootPane" prefHeight="120.0" prefWidth="100.0" stylesheets="@../../../css/square_style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.code.controller.SquareController">
 
-    <!-- Container chứa sỏi (FlowPane giúp sỏi tự xuống dòng) -->
-    <FlowPane fx:id="stoneContainer" alignment="CENTER" hgap="3" prefHeight="120.0" prefWidth="100.0" style="-fx-padding: 10;" vgap="3">
-        <!-- Sỏi sẽ được add vào đây bằng code Java -->
-    </FlowPane>
+    <!-- 1. Hình nền ô -->
+<!--     <Rectangle fx:id="bgShape" arcHeight="10.0" arcWidth="10.0" fill="#e0e0e0" height="120.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+ -->
+    <!-- 2. Container chứa sỏi -->
+    <FlowPane fx:id="stoneContainer" alignment="CENTER" hgap="3" mouseTransparent="true" prefHeight="120.0" prefWidth="100.0" style="-fx-padding: 10;" vgap="3" />
    
-    <!-- Số điểm (đặt ở góc hoặc mờ bên dưới) -->
+    <!-- 3. Số điểm -->
     <VBox alignment="BOTTOM_CENTER" mouseTransparent="true">
         <Label fx:id="lblStones" styleClass="score-text" text="5">
              <font><Font size="18.0" /></font>
@@ -23,26 +27,34 @@
         </Label>
     </VBox>
        
-    
+    <!-- 4. Container chứa Mũi tên (Quan trọng: pickOnBounds="false" để không che ô) -->
     <StackPane alignment="CENTER" pickOnBounds="false">
-    
-	    <!-- Mũi tên TRÁI -->
-	    <!-- pickOnBounds="true" giúp click vào vùng bao quanh tam giác cũng ăn -->
-	    <Polygon fx:id="arrowLeft" fill="#228b22" visible="false" 
-	             points="0.0, 10.0, 10.0, 0.0, 10.0, 20.0" 
-	             StackPane.alignment="CENTER_LEFT" pickOnBounds="true">
-	         <StackPane.margin><Insets left="5.0"/></StackPane.margin>
-<!-- 	         <cursor><Cursor fx:constant="HAND" /></cursor> -->
-	    </Polygon>
-	    
-	    <!-- Mũi tên PHẢI -->
-	    <Polygon fx:id="arrowRight" fill="#228b22" visible="false" 
-	             points="0.0, 0.0, 10.0, 10.0, 0.0, 20.0" 
-	             StackPane.alignment="CENTER_RIGHT" pickOnBounds="true">
-	         <StackPane.margin><Insets right="5.0"/></StackPane.margin>
-<!-- 	         <cursor><Cursor fx:constant="HAND" /></cursor> -->
-	    </Polygon>
-	    
-	</StackPane>
+        
+        <!-- MŨI TÊN TRÁI (Dùng ImageView) -->
+        <ImageView fx:id="arrowLeft" fitHeight="30.0" fitWidth="30.0" 
+                   pickOnBounds="true" mouseTransparent="false" preserveRatio="true" visible="false" 
+                    StackPane.alignment="CENTER_LEFT">
+            <image>
+                <!-- Đường dẫn ảnh, nhớ có dấu / ở đầu -->
+                <Image url="@../../../image/left-arrow.png" />
+            </image>
+            <StackPane.margin>
+                <Insets left="5.0" />
+            </StackPane.margin>
+        </ImageView>
+        
+        <!-- MŨI TÊN PHẢI (Dùng ImageView) -->
+        <ImageView fx:id="arrowRight" fitHeight="30.0" fitWidth="30.0" 
+                   pickOnBounds="true" mouseTransparent="false" preserveRatio="true" visible="false" 
+                    StackPane.alignment="CENTER_RIGHT">
+            <image>
+                <Image url="@../../../image/right-arrow.png" />
+            </image>
+            <StackPane.margin>
+                <Insets right="5.0" />
+            </StackPane.margin>
+        </ImageView>
+        
+    </StackPane>
 
 </StackPane>

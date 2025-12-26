@@ -10,8 +10,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.geometry.Bounds;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
+
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -60,11 +63,14 @@ public class GameController implements Initializable {
         updateInfoLabels(); 
         updateBoardStonesImmediate();
         loadHands();
-
+        
         mainRoot.setOnMouseMoved(this::handleMouseMove);
 
-        
-        
+      
+        // blur the mouse
+      mainRoot.setCursor(javafx.scene.Cursor.NONE); 
+      
+      
         gridBoard.setFocusTraversable(true);
         gridBoard.setOnKeyPressed(e -> {
             if (selectedSquareId != null && !isAnimating) {
@@ -78,16 +84,19 @@ public class GameController implements Initializable {
     }
     
     private void loadHands() {
+
         try {
             // Tạm thời nếu bạn chưa có ảnh, dùng null. Code logic sẽ check null.
-             imgHandOpen = new Image(getClass().getResourceAsStream("/image/open_hand_second.png"));
-             imgHandClosed = new Image(getClass().getResourceAsStream("/image/open_hand_second.png"));
+             imgHandOpen = new Image(getClass().getResourceAsStream("/image/open_hand_third.png"));
+             imgHandClosed = new Image(getClass().getResourceAsStream("/image/open_hand_third.png"));
 //            if(imgHandOpen == null) {
 //            	System.out.println("ERROR HERE----");
 //            }
             // Set ảnh mặc định ban đầu
             if (imgHandOpen != null) handCursor.setImage(imgHandOpen);
             handCursor.setVisible(true);
+            
+            //blur the hand
             handCursor.setMouseTransparent(true); 
         } catch (Exception e) {
             System.out.println("No image of hand!!!");
@@ -99,8 +108,71 @@ public class GameController implements Initializable {
         if (!isAnimating) {
             updateHandPosition(event.getX(), event.getY());
             
+            // check xem co overlap voi handCursor khong
+            checkArrowHover(event.getX(), event.getY());
+            
+            // check xem co overlap voi citizen square hay khong
+            checkSquareHover(event.getX(), event.getY());
+            
             // Reset trạng thái tay mở
             if (imgHandOpen != null) handCursor.setImage(imgHandOpen);
+        }
+    }
+    
+    
+    //check xem arrow co overlap voi handCursor khong
+    private void checkArrowHover(double mouseX, double mouseY) {
+        if (selectedSquareId == null) return;
+        
+        SquareController ctrl = squareControllerMap.get(selectedSquareId);
+        if (ctrl == null) return;
+        
+        ImageView arrowLeft = ctrl.getArrowLeft();
+        ImageView arrowRight = ctrl.getArrowRight();
+        
+        if (arrowLeft.isVisible()) {
+            javafx.geometry.Bounds boundsLeft = arrowLeft.localToScene(arrowLeft.getBoundsInLocal());
+            if (boundsLeft.contains(mouseX, mouseY)) {
+                if (!arrowLeft.getStyleClass().contains("arrow-hover")) {
+                    arrowLeft.getStyleClass().add("arrow-hover");
+                }
+            } else {
+                arrowLeft.getStyleClass().remove("arrow-hover");
+            }
+        }
+        
+        if (arrowRight.isVisible()) {
+            javafx.geometry.Bounds boundsRight = arrowRight.localToScene(arrowRight.getBoundsInLocal());
+            if (boundsRight.contains(mouseX, mouseY)) {
+                if (!arrowRight.getStyleClass().contains("arrow-hover")) {
+                    arrowRight.getStyleClass().add("arrow-hover");
+                }
+            } else {
+                arrowRight.getStyleClass().remove("arrow-hover");
+            }
+        }
+    }
+    
+    private void checkSquareHover(double mouseX, double mouseY) {
+        for (Map.Entry<Integer, SquareController> entry : squareControllerMap.entrySet()) {
+            int squareId = entry.getKey();
+            SquareController ctrl = entry.getValue();
+            
+            // Skip Mandarin squares (id 5 and 11)
+            if (squareId == 5 || squareId == 11) continue;
+            
+            StackPane squareRoot = ctrl.getRoot();
+            javafx.geometry.Bounds bounds = squareRoot.localToScene(squareRoot.getBoundsInLocal());
+            
+            if (bounds.contains(mouseX, mouseY)) {
+                if (isValidSelection(squareId)) {
+                    if (!squareRoot.getStyleClass().contains("square-hover")) {
+                        squareRoot.getStyleClass().add("square-hover");
+                    }
+                }
+            } else {
+                squareRoot.getStyleClass().remove("square-hover");
+            }
         }
     }
 
@@ -138,8 +210,17 @@ public class GameController implements Initializable {
         SquareController sqCtrl = loader.getController();
         sqCtrl.setup(id, isMandarin);
         
-        squareNode.setOnMouseClicked(e -> handleSquareClick(id));
-        sqCtrl.setOnArrowClick(isRightArrow -> executeMove(isRightArrow));
+        squareNode.setOnMouseClicked(e -> {
+            // Only handle if the click target is NOT an arrow
+            if (!(e.getTarget() instanceof ImageView)) {
+                handleSquareClick(id);
+            }
+        });
+//        System.out.println("ENTER BEFORE ARROW CLICK .....");
+        sqCtrl.setOnArrowClick(isRightArrow -> {
+//        	System.out.println("ENTER ARROW CLICK .....");
+        	executeMove(isRightArrow);
+        	});
         
 //        squareNode.setOnMouseClicked(e -> handleSquareAction(id));
 
@@ -147,6 +228,33 @@ public class GameController implements Initializable {
 
         squareControllerMap.put(id, sqCtrl);
     }
+//    private void loadAndAddSquare(int id, boolean isMandarin, int col, int row, int colSpan, int rowSpan) throws IOException {
+//        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/code/view/Square.fxml"));
+//        Parent squareNode = loader.load();
+//
+//        SquareController sqCtrl = loader.getController();
+//        sqCtrl.setup(id, isMandarin);
+//        
+//        squareNode.setOnMouseClicked(e -> {
+//            // IMPORTANT: Check if the click is on an arrow ImageView
+//            if (e.getTarget() instanceof ImageView) {
+//                ImageView img = (ImageView) e.getTarget();
+//                // Check if it's one of the arrows by fx:id
+//                if (img.getId() != null && (img.getId().equals("arrowLeft") || img.getId().equals("arrowRight"))) {
+//                    // Don't handle as square click, let arrow handler process it
+//                    return;
+//                }
+//            }
+//            handleSquareClick(id);
+//        });
+//
+//        sqCtrl.setOnArrowClick(isRightArrow -> {
+//            executeMove(isRightArrow);
+//        });
+//
+//        gridBoard.add(squareNode, col, row, colSpan, rowSpan);
+//        squareControllerMap.put(id, sqCtrl);
+//    }
     
     private void handleSquareClick(int squareId) {
         if (isAnimating || gameModel.isGameOver()) return;
@@ -231,21 +339,55 @@ public class GameController implements Initializable {
     }
     
     
+    // private void runMoveAnimation(List<MoveStep> history) {
+    //     isAnimating = true;
+    //     if (imgHandClosed != null) handCursor.setImage(imgHandClosed); // Tay nắm lại rải quân
+
+    //     Timeline timeline = new Timeline();
+    //     double delayTime = 0;
+    //     double stepDuration = 400; // Chậm lại chút để nhìn tay bay
+
+    //     for (MoveStep step : history) {
+    //         KeyFrame kf = new KeyFrame(Duration.millis(delayTime), e -> {
+    //             // 1. Update số sỏi
+    //             if (squareControllerMap.containsKey(step.squareId)) {
+    //                 squareControllerMap.get(step.squareId).setStones(step.stones);
+                    
+    //                 // 2. Di chuyển bàn tay đến ô đang rải
+    //                 moveHandToSquare(step.squareId);
+    //             }
+    //         });
+    //         timeline.getKeyFrames().add(kf);
+    //         delayTime += stepDuration;
+    //     }
+
+    //     timeline.setOnFinished(e -> {
+    //         isAnimating = false;
+    //         if (imgHandOpen != null) handCursor.setImage(imgHandOpen); // Mở tay ra
+    //         updateInfoLabels();
+    //         if (gameModel.isGameOver()) showWinnerDialog();
+    //     });
+    //     timeline.play();
+    // }
+
     private void runMoveAnimation(List<MoveStep> history) {
         isAnimating = true;
-        if (imgHandClosed != null) handCursor.setImage(imgHandClosed); // Tay nắm lại rải quân
-
+        
+        // SHOW system cursor during animation (hand will also be visible doing animation)
+        mainRoot.setCursor(javafx.scene.Cursor.DEFAULT);
+        
+        if (imgHandClosed != null) handCursor.setImage(imgHandClosed); // Closed hand for animation
+        
         Timeline timeline = new Timeline();
         double delayTime = 0;
-        double stepDuration = 400; // Chậm lại chút để nhìn tay bay
+        double stepDuration = 400;
 
         for (MoveStep step : history) {
             KeyFrame kf = new KeyFrame(Duration.millis(delayTime), e -> {
-                // 1. Update số sỏi
                 if (squareControllerMap.containsKey(step.squareId)) {
                     squareControllerMap.get(step.squareId).setStones(step.stones);
                     
-                    // 2. Di chuyển bàn tay đến ô đang rải
+                    // Move hand to square during animation
                     moveHandToSquare(step.squareId);
                 }
             });
@@ -255,11 +397,16 @@ public class GameController implements Initializable {
 
         timeline.setOnFinished(e -> {
             isAnimating = false;
-            if (imgHandOpen != null) handCursor.setImage(imgHandOpen); // Mở tay ra
+            
+            // HIDE system cursor again, keep hand image visible
+            mainRoot.setCursor(javafx.scene.Cursor.NONE);
+            if (imgHandOpen != null) handCursor.setImage(imgHandOpen); // Open hand after animation
+            
             updateInfoLabels();
             if (gameModel.isGameOver()) showWinnerDialog();
         });
         timeline.play();
+
     }
     
     private void moveHandToSquare(int squareId) {

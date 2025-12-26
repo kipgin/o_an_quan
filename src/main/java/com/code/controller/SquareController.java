@@ -85,8 +85,8 @@ public class SquareController {
     @FXML private StackPane rootPane;
     @FXML private FlowPane stoneContainer;
     @FXML private Label lblStones;
-    @FXML private javafx.scene.shape.Polygon arrowLeft;
-    @FXML private javafx.scene.shape.Polygon arrowRight;
+    @FXML private ImageView arrowLeft;
+    @FXML private ImageView arrowRight;
 
     private int squareId;
     private boolean isMandarin;
@@ -94,6 +94,7 @@ public class SquareController {
     // Load ảnh 1 lần (static) để tối ưu bộ nhớ
     private static Image imgStone; 
     private static Image imgBigStone;
+    
 
     static {
         try {
@@ -157,16 +158,49 @@ public class SquareController {
         arrowRight.setVisible(isVisible);
     }
 
+    // public void setOnArrowClick(Consumer<Boolean> onDirectionSelected) {
+    //     arrowRight.setOnMouseClicked(e -> { e.consume(); onDirectionSelected.accept(true); });
+    //     arrowLeft.setOnMouseClicked(e -> { e.consume(); onDirectionSelected.accept(false); });
+    // }
     public void setOnArrowClick(Consumer<Boolean> onDirectionSelected) {
-        arrowRight.setOnMouseClicked(e -> { e.consume(); onDirectionSelected.accept(true); });
-        arrowLeft.setOnMouseClicked(e -> { e.consume(); onDirectionSelected.accept(false); });
-    }
+//    System.out.println("Setting arrow handlers for square: " + squareId); 
     
+	arrowRight.setOnMouseEntered(e -> {
+        arrowRight.getStyleClass().add("arrow-hover");
+    });
+    arrowRight.setOnMouseExited(e -> {
+        arrowRight.getStyleClass().remove("arrow-hover");
+    });
+    
+    arrowLeft.setOnMouseEntered(e -> {
+        arrowLeft.getStyleClass().add("arrow-hover");
+    });
+    arrowLeft.setOnMouseExited(e -> {
+        arrowLeft.getStyleClass().remove("arrow-hover");
+    });
+    arrowRight.setOnMouseClicked(e -> { 
+//        System.out.println(">>> RIGHT ARROW CLICKED! Square: " + squareId); 
+        e.consume(); 
+        onDirectionSelected.accept(true); 
+    });
+    
+    arrowLeft.setOnMouseClicked(e -> { 
+//        System.out.println(">>> LEFT ARROW CLICKED! Square: " + squareId); 
+        e.consume(); 
+        onDirectionSelected.accept(false); 
+    });
+}
     // API để lấy toạ độ của ô trên màn hình (dùng cho bàn tay bay đến)
     public double getLayoutX() { return rootPane.getLayoutX(); }
     public double getLayoutY() { return rootPane.getLayoutY(); }
     public double getWidth() { return rootPane.getWidth(); }
     public double getHeight() { return rootPane.getHeight(); }
+    public ImageView getArrowLeft() {
+    	return this.arrowLeft;
+    }
+    public ImageView getArrowRight() {
+    	return this.arrowRight;
+    }
     public StackPane getRoot() {
         return rootPane;
     }

@@ -52,3 +52,16 @@
     -fx-font-weight: bold;
     -fx-font-family: "Segoe UI", sans-serif;
 }
+
+.arrow-hover {
+    -fx-effect: dropshadow(gaussian, yellow, 15, 0.8, 0, 0);
+}
+
+.arrow-normal {
+    -fx-effect: null;
+}
+
+/* Square hover effect - White glow */
+.square-hover {
+    -fx-effect: dropshadow(gaussian, white, 20, 0.7, 0, 0);
+}
