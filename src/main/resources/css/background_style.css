@@ -1,5 +1,5 @@
 .classic-wood-background {
-  background-image: url('/image/background_boardgame_first');
+  background-image: url('/image/theme.png');
   background-size: cover; /* Ensures the image covers the entire container */
   background-repeat: no-repeat;
   background-position: center;

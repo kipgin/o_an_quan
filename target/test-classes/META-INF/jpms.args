@@ -1,0 +1,4 @@
+--patch-module
+OAnQuanMaven=_
+--add-reads
+OAnQuanMaven=ALL-UNNAMED

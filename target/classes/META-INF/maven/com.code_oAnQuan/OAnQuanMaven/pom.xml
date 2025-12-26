@@ -57,6 +57,23 @@
 </dependencies>
 
 <build>
+    <resources>
+        <resource>
+            <directory>src/main/resources</directory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </resource>
+        <resource>
+            <directory>src/main/java</directory>
+            <includes>
+            <include>**/*.fxml</include>
+            <include>**/*.css</include>
+            <include>**/*.png</include>
+            <include>**/*.jpg</include>
+            </includes>
+        </resource>
+    </resources>
         <plugins>
             <!-- Plugin biên dịch: Phải dùng bản 3.13.0 trở lên để hỗ trợ Java mới -->
             <plugin>
@@ -67,6 +84,15 @@
                     <release>23</release>
                 </configuration>
             </plugin>
+            
+            <plugin>
+            	<groupId>org.apache.maven.plugins</groupId>
+            	<artifactId>maven-compiler-plugin</artifactId>
+            	<version>3.13.0</version>
+            	<configuration>
+                <release>23</release>
+            	</configuration>
+        	</plugin>
 
             <!-- Plugin chạy JavaFX -->
             <plugin>

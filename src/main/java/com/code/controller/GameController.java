@@ -57,7 +57,12 @@ public class GameController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         gameModel = new OAnQuanGame();
         squareControllerMap = new HashMap<>();
-        
+//        try {
+//            String css = getClass().getResource("@../../../css/theme_style.css").toExternalForm();
+//            mainRoot.getStylesheets().add(css);
+//        } catch (Exception e) {
+//            System.err.println("Cannot load CSS file: " + e.getMessage());
+//        }
         setupBoardUI();
 //        updateUI();
         updateInfoLabels(); 
