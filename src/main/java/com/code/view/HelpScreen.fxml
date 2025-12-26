@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" 
+<BorderPane xmlns="http://javafx.com/javafx/24" stylesheets = "@../../../css/theme_style.css" xmlns:fx="http://javafx.com/fxml/1" 
             fx:controller="com.code.controller.HelpScreenController" prefWidth="600" prefHeight="400">
     <top>
         <Label text="LUẬT CHƠI" BorderPane.alignment="CENTER">

@@ -34,7 +34,7 @@
 
    <bottom>
       <HBox alignment="CENTER" style="-fx-padding: 20;">
-         <Button onAction="#handleBackToMenu" text="Menu" stylesheets ="@../../../css/square_style.css"/>
+         <Button fx:id="btnMenu"  stylesheets ="@../../../css/home_button_style.css"/>
       </HBox>
    </bottom>
 	

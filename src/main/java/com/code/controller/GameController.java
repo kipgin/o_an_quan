@@ -10,6 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Button;
 import javafx.geometry.Bounds;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -45,6 +46,7 @@ public class GameController implements Initializable {
     @FXML private Label lblTurnInfo;
     @FXML private GridPane gridBoard;
     @FXML private ImageView handCursor;
+    @FXML private Button btnMenu;
 
     private OAnQuanGame gameModel;
     
@@ -67,6 +69,7 @@ public class GameController implements Initializable {
 //        updateUI();
         updateInfoLabels(); 
         updateBoardStonesImmediate();
+        setupMenuButton();
         loadHands();
         
         mainRoot.setOnMouseMoved(this::handleMouseMove);
@@ -84,6 +87,15 @@ public class GameController implements Initializable {
                 } else if (e.getCode() == KeyCode.RIGHT) {
                     executeMove(true);  
                 }
+            }
+        });
+    }
+    
+    private void setupMenuButton() {
+        // Add click handler for Menu button
+        btnMenu.setOnMouseClicked(e -> {
+            if (!isAnimating) {
+                handleBackToMenu();
             }
         });
     }
@@ -119,6 +131,8 @@ public class GameController implements Initializable {
             // check xem co overlap voi citizen square hay khong
             checkSquareHover(event.getX(), event.getY());
             
+            // check xem co overlap voi menu button hay khong
+            checkMenuButtonHover(event.getX(), event.getY());
             // Reset trạng thái tay mở
             if (imgHandOpen != null) handCursor.setImage(imgHandOpen);
         }
@@ -178,6 +192,22 @@ public class GameController implements Initializable {
             } else {
                 squareRoot.getStyleClass().remove("square-hover");
             }
+        }
+    }
+    
+    private void checkMenuButtonHover(double mouseX, double mouseY) {
+        if (btnMenu == null) return;
+        
+        Bounds bounds = btnMenu.localToScene(btnMenu.getBoundsInLocal());
+        
+        if (bounds.contains(mouseX, mouseY)) {
+            if (!btnMenu.getStyleClass().contains("button-hover")) {
+                btnMenu.getStyleClass().add("button-hover");
+            }
+            // Change hand to closed when hovering button
+            if (imgHandClosed != null) handCursor.setImage(imgHandClosed);
+        } else {
+            btnMenu.getStyleClass().remove("button-hover");
         }
     }
 
