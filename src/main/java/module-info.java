@@ -9,8 +9,8 @@ module OAnQuanMaven {
 
     opens com.code to javafx.graphics, javafx.fxml;
     opens com.code.controller to javafx.fxml;
-    opens css to javafx.graphics, javafx.fxml;
-    opens image to javafx.graphics,javafx.fxml;
-    // opens com.code.view to javafx.fxml;
+    // opens css to javafx.graphics, javafx.fxml;
+    // opens image to javafx.graphics,javafx.fxml;
+    opens com.code.view to javafx.fxml;
     exports com.code;
 }
