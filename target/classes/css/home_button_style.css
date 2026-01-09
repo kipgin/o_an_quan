@@ -4,10 +4,7 @@
     -fx-background-position: center;
     -fx-background-repeat: no-repeat;
     -fx-background-color: transparent;
-    /*-fx-min-width: 50px;
-    -fx-min-height: 50px;
-    -fx-pref-width: 50px;
-    -fx-pref-height: 50px;*/
+    -fx-padding: 0; /* Remove padding to match image size */
     -fx-border-color: transparent;
 }
 

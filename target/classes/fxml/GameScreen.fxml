@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="mainRoot" stylesheets = "@../css/theme_style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.code.controller.GameController">
+<BorderPane AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+   
+   <top>
+      <HBox alignment="CENTER" spacing="20.0" style="-fx-padding: 20;">
+         <!-- Player 1 (Left) -->
+         <HBox alignment="CENTER" spacing="10" fx:id="boxPlayer1">
+            <ImageView fitHeight="60" fitWidth="60" preserveRatio="true">
+               <image><Image url="@../image/player.png"/></image>
+            </ImageView>
+            <StackPane>
+               <ImageView fitHeight="50" fitWidth="150" preserveRatio="true">
+                  <image><Image url="@../image/score.png"/></image>
+               </ImageView>
+               <Label fx:id="lblScoreP1" text="Score: 0" textFill="BLACK">
+                  <font><Font name="System Bold" size="14.0" /></font>
+                  <padding><Insets left="40"/></padding> <!-- Pushed right to avoid "Score" text in image -->
+               </Label>
+            </StackPane>
+         </HBox>
+
+         <!-- Timer (Center) -->
+         <StackPane fx:id="paneTimer">
+             <ImageView fitHeight="60" fitWidth="120" preserveRatio="true">
+                 <image><Image url="@../image/blank_thing.png"/></image>
+             </ImageView>
+             <Label fx:id="lblTimer" text="01:00" textFill="BLACK">
+                 <font><Font name="System Bold" size="24.0" /></font>
+             </Label>
+         </StackPane>
+
+         <!-- Player 2 (Right) -->
+         <HBox alignment="CENTER" spacing="10" fx:id="boxPlayer2">
+            <StackPane>
+               <ImageView fitHeight="50" fitWidth="150" preserveRatio="true">
+                  <image><Image url="@../image/score.png"/></image>
+               </ImageView>
+               <Label fx:id="lblScoreP2" text="Score: 0" textFill="BLACK">
+                  <font><Font name="System Bold" size="14.0" /></font>
+                  <padding><Insets left="40"/></padding>
+               </Label>
+            </StackPane>
+            <ImageView fitHeight="60" fitWidth="60" preserveRatio="true">
+               <image><Image url="@../image/player.png"/></image>
+            </ImageView>
+         </HBox>
+      </HBox>
+   </top>
+
+   <center>
+ 
+      <GridPane fx:id="gridBoard" alignment="CENTER" hgap="5.0" vgap="5.0" />
+   </center>
+
+   <bottom>
+      <HBox alignment="CENTER" spacing="20" style="-fx-padding: 20;">
+         <Button fx:id="btnMenu" stylesheets="@../css/image_button.css">
+             <graphic>
+                <ImageView fitHeight="40" fitWidth="40" preserveRatio="true">
+                    <image>
+                        <Image url="@../image/home.png"/>
+                    </image>
+                </ImageView>
+            </graphic>
+         </Button>
+         
+         <Button fx:id="btnStop" stylesheets="@../css/image_button.css">
+            <graphic>
+                <ImageView fitHeight="40" fitWidth="40" preserveRatio="true">
+                    <image>
+                        <Image url="@../image/stop.png"/>
+                    </image>
+                </ImageView>
+            </graphic>
+         </Button>
+
+         <Button fx:id="btnMusic" stylesheets="@../css/image_button.css" />
+
+      </HBox>
+   </bottom>
+	
+	<ImageView fx:id="handCursor" fitHeight="60.0" fitWidth="60.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true" visible="false" />
+	
+</BorderPane>
+
+</AnchorPane>

@@ -1,6 +1,5 @@
 .classic-wood-background {
   background-image: url('/image/theme.png');
-  background-size: cover; /* Ensures the image covers the entire container */
-  background-repeat: no-repeat;
+  background-size: cover;
   background-position: center;
 }

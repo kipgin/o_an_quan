@@ -1,496 +1,193 @@
 package com.code.controller;
 
-import com.code.model.entity.Square;
-
-
-
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
+
+
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
+
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Button;
-import javafx.geometry.Bounds;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.util.Duration;
-import javafx.scene.input.KeyCode;
-
-import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.List;
+import java.util.ResourceBundle;
 
+import com.code.config.GameConstants;
+
+import com.code.controller.managers.HandCursorManager;
+import com.code.controller.managers.MenuManager;
+import com.code.controller.managers.GameTimerManager;
+import com.code.controller.managers.PlayerInfoManager;
+import com.code.controller.managers.GameControlManager;
+import com.code.controller.managers.GameButtonManager;
+import com.code.controller.board.BoardUIService;
+import com.code.controller.animation.AnimationService;
+import com.code.controller.input.GameInputHandler;
+import com.code.controller.input.GameInputListener;
+import com.code.controller.managers.MusicManager;
 import com.code.model.game.OAnQuanGame;
 import com.code.model.game.MoveStep;
 
-
 public class GameController implements Initializable {
-	
-	@FXML private AnchorPane mainRoot;
-    @FXML private Label lblScoreP1;
-    @FXML private Label lblScoreP2;
-    @FXML private Label lblTurnInfo;
-    @FXML private GridPane gridBoard;
-    @FXML private ImageView handCursor;
-    @FXML private Button btnMenu;
+
+    @FXML
+    private AnchorPane mainRoot;
+    @FXML
+    private Label lblScoreP1;
+    @FXML
+    private Label lblScoreP2;
+    @FXML
+    private GridPane gridBoard;
+    @FXML
+    private ImageView handCursor;
+    @FXML
+    private Button btnMenu;
+    @FXML
+    private Button btnMusic;
+    @FXML
+    private Button btnStop;
+
+    // New UI Fields
+    @FXML
+    private HBox boxPlayer1;
+    @FXML
+    private HBox boxPlayer2;
+    @FXML
+    private StackPane paneTimer;
+    @FXML
+    private Label lblTimer;
 
     private OAnQuanGame gameModel;
-    
-    private Map<Integer, SquareController> squareControllerMap;
-    private boolean isAnimating = false;
-    private Integer selectedSquareId = null;
-    private Image imgHandOpen, imgHandClosed;
-    
+    private BoardUIService boardUIService;
+    private AnimationService animationService;
+    private GameInputHandler inputHandler;
+    private HandCursorManager handCursorManager;
+    private MenuManager menuManager;
+    private GameTimerManager gameTimerManager;
+    private PlayerInfoManager playerInfoManager;
+    private GameControlManager gameControlManager;
+    private GameButtonManager gameButtonManager;
+    private GameInputListener gameInputListener;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // 1. Initialize Core Services
         gameModel = new OAnQuanGame();
-        squareControllerMap = new HashMap<>();
-//        try {
-//            String css = getClass().getResource("@../../../css/theme_style.css").toExternalForm();
-//            mainRoot.getStylesheets().add(css);
-//        } catch (Exception e) {
-//            System.err.println("Cannot load CSS file: " + e.getMessage());
-//        }
-        setupBoardUI();
-//        updateUI();
-        updateInfoLabels(); 
-        updateBoardStonesImmediate();
-        setupMenuButton();
-        loadHands();
-        
-        mainRoot.setOnMouseMoved(this::handleMouseMove);
+        boardUIService = new BoardUIService(gridBoard);
+        handCursorManager = new HandCursorManager(mainRoot, handCursor);
+        handCursor.setVisible(true); // Fix: Ensure cursor is visible immediately
 
-      
-        // blur the mouse
-      mainRoot.setCursor(javafx.scene.Cursor.NONE); 
-      
-      
-        gridBoard.setFocusTraversable(true);
-        gridBoard.setOnKeyPressed(e -> {
-            if (selectedSquareId != null && !isAnimating) {
-                if (e.getCode() == KeyCode.LEFT) {
-                    executeMove(false); 
-                } else if (e.getCode() == KeyCode.RIGHT) {
-                    executeMove(true);  
-                }
-            }
-        });
-    }
-    
-    private void setupMenuButton() {
-        // Add click handler for Menu button
-        btnMenu.setOnMouseClicked(e -> {
-            if (!isAnimating) {
-                handleBackToMenu();
-            }
-        });
-    }
-    
-    private void loadHands() {
+        menuManager = new MenuManager(btnMenu, handCursorManager, this::handleBackToMenu);
+        MusicManager.getInstance().attachMusicButton(btnMusic);
+        animationService = new AnimationService(handCursor, boardUIService, handCursorManager);
+        inputHandler = new GameInputHandler(gameModel, boardUIService, handCursorManager, this::onMoveExecuted);
 
-        try {
-            // Tạm thời nếu bạn chưa có ảnh, dùng null. Code logic sẽ check null.
-             imgHandOpen = new Image(getClass().getResourceAsStream("/image/open_hand_third.png"));
-             imgHandClosed = new Image(getClass().getResourceAsStream("/image/open_hand_third.png"));
-//            if(imgHandOpen == null) {
-//            	System.out.println("ERROR HERE----");
-//            }
-            // Set ảnh mặc định ban đầu
-            if (imgHandOpen != null) handCursor.setImage(imgHandOpen);
-            handCursor.setVisible(true);
-            
-            //blur the hand
-            handCursor.setMouseTransparent(true); 
-        } catch (Exception e) {
-            System.out.println("No image of hand!!!");
-        }
-    }
-    
-    private void handleMouseMove(MouseEvent event) {
-        // Chỉ di chuyển theo chuột khi KHÔNG chạy animation
-        if (!isAnimating) {
-            updateHandPosition(event.getX(), event.getY());
-            
-            // check xem co overlap voi handCursor khong
-            checkArrowHover(event.getX(), event.getY());
-            
-            // check xem co overlap voi citizen square hay khong
-            checkSquareHover(event.getX(), event.getY());
-            
-            // check xem co overlap voi menu button hay khong
-            checkMenuButtonHover(event.getX(), event.getY());
-            // Reset trạng thái tay mở
-            if (imgHandOpen != null) handCursor.setImage(imgHandOpen);
-        }
-    }
-    
-    
-    //check xem arrow co overlap voi handCursor khong
-    private void checkArrowHover(double mouseX, double mouseY) {
-        if (selectedSquareId == null) return;
-        
-        SquareController ctrl = squareControllerMap.get(selectedSquareId);
-        if (ctrl == null) return;
-        
-        ImageView arrowLeft = ctrl.getArrowLeft();
-        ImageView arrowRight = ctrl.getArrowRight();
-        
-        if (arrowLeft.isVisible()) {
-            javafx.geometry.Bounds boundsLeft = arrowLeft.localToScene(arrowLeft.getBoundsInLocal());
-            if (boundsLeft.contains(mouseX, mouseY)) {
-                if (!arrowLeft.getStyleClass().contains("arrow-hover")) {
-                    arrowLeft.getStyleClass().add("arrow-hover");
-                }
-            } else {
-                arrowLeft.getStyleClass().remove("arrow-hover");
-            }
-        }
-        
-        if (arrowRight.isVisible()) {
-            javafx.geometry.Bounds boundsRight = arrowRight.localToScene(arrowRight.getBoundsInLocal());
-            if (boundsRight.contains(mouseX, mouseY)) {
-                if (!arrowRight.getStyleClass().contains("arrow-hover")) {
-                    arrowRight.getStyleClass().add("arrow-hover");
-                }
-            } else {
-                arrowRight.getStyleClass().remove("arrow-hover");
-            }
-        }
-    }
-    
-    private void checkSquareHover(double mouseX, double mouseY) {
-        for (Map.Entry<Integer, SquareController> entry : squareControllerMap.entrySet()) {
-            int squareId = entry.getKey();
-            SquareController ctrl = entry.getValue();
-            
-            // Skip Mandarin squares (id 5 and 11)
-            if (squareId == 5 || squareId == 11) continue;
-            
-            StackPane squareRoot = ctrl.getRoot();
-            javafx.geometry.Bounds bounds = squareRoot.localToScene(squareRoot.getBoundsInLocal());
-            
-            if (bounds.contains(mouseX, mouseY)) {
-                if (isValidSelection(squareId)) {
-                    if (!squareRoot.getStyleClass().contains("square-hover")) {
-                        squareRoot.getStyleClass().add("square-hover");
+        // 2. Initialize New Managers
+        playerInfoManager = new PlayerInfoManager(lblScoreP1, lblScoreP2, boxPlayer1, boxPlayer2);
+        gameTimerManager = new GameTimerManager();
+        gameButtonManager = new GameButtonManager();
+        gameControlManager = new GameControlManager(btnStop, gameTimerManager);
+
+        gameInputListener = new GameInputListener(
+                handCursorManager, boardUIService, menuManager,
+                inputHandler, gameTimerManager,
+                gameButtonManager, btnMusic, btnStop);
+
+        // 3. Setup Timer Bindings & Logic
+        lblTimer.textProperty().bind(gameTimerManager.timeStringProperty());
+        gameTimerManager.setOnTimeout(this::handleTimeout);
+        gameTimerManager.setOnTick(this::handleTimerTick);
+        gameTimerManager.start();
+
+        // 4. Setup Board Callbacks
+        boardUIService.setupBoardUI(
+                (squareId) -> {
+                    if (!animationService.isAnimating() && !gameTimerManager.isPaused()) {
+                        inputHandler.handleSquareClick(squareId);
+                        gridBoard.requestFocus();
                     }
-                }
-            } else {
-                squareRoot.getStyleClass().remove("square-hover");
-            }
-        }
-    }
-    
-    private void checkMenuButtonHover(double mouseX, double mouseY) {
-        if (btnMenu == null) return;
-        
-        Bounds bounds = btnMenu.localToScene(btnMenu.getBoundsInLocal());
-        
-        if (bounds.contains(mouseX, mouseY)) {
-            if (!btnMenu.getStyleClass().contains("button-hover")) {
-                btnMenu.getStyleClass().add("button-hover");
-            }
-            // Change hand to closed when hovering button
-            if (imgHandClosed != null) handCursor.setImage(imgHandClosed);
-        } else {
-            btnMenu.getStyleClass().remove("button-hover");
-        }
+                },
+                (isRightArrow) -> {
+                    if (!animationService.isAnimating() && !gameTimerManager.isPaused()) {
+                        inputHandler.handleDirectionSelection(isRightArrow);
+                    }
+                });
+
+        // 5. Initial UI Sync
+        playerInfoManager.updateScores(gameModel.getPlayer1(), gameModel.getPlayer2());
+        playerInfoManager.updateActivePlayerHighlight(gameModel);
+        boardUIService.updateBoardStones(gameModel);
+
+        setupGlobalInputs();
     }
 
-    private void updateHandPosition(double x, double y) {
-        // Căn chỉnh để mũi trỏ tay nằm đúng vị trí chuột (thường là lệch x, y một chút)
-        handCursor.setLayoutX(x - 10); 
-        handCursor.setLayoutY(y - 10);
-    }
-    
-    
-
-    private void setupBoardUI() {
-        try {
-            loadAndAddSquare(11, true, 0, 0, 1, 2);
-            loadAndAddSquare(5, true, 6, 0, 1, 2);
-
-            for (int i = 0; i < 5; i++) {
-                loadAndAddSquare(10 - i, false, i + 1, 0, 1, 1);
-            }
-
-            for (int i = 0; i < 5; i++) {
-                loadAndAddSquare(i, false, i + 1, 1, 1, 1);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Error: Cannot load file Square.fxml");
-        }
+    private void setupGlobalInputs() {
+        mainRoot.setOnMouseMoved(gameInputListener::handleMouseMove);
+        gridBoard.setFocusTraversable(true);
+        gridBoard.setOnKeyPressed(gameInputListener::handleKeyPressed);
     }
 
+    private void handleTimeout() {
+        lblTimer.textProperty().unbind();
+        lblTimer.setText("Time out!!!");
+        paneTimer.setStyle(GameConstants.EFFECT_TIMEOUT);
 
-    private void loadAndAddSquare(int id, boolean isMandarin, int col, int row, int colSpan, int rowSpan) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/code/view/Square.fxml"));
-        Parent squareNode = loader.load();
-
-        SquareController sqCtrl = loader.getController();
-        sqCtrl.setup(id, isMandarin);
-        
-        squareNode.setOnMouseClicked(e -> {
-            // Only handle if the click target is NOT an arrow
-            if (!(e.getTarget() instanceof ImageView)) {
-                handleSquareClick(id);
-            }
+        PauseTransition pt = new PauseTransition(Duration.seconds(GameConstants.TIMEOUT_DISPLAY_DURATION_SECONDS));
+        pt.setOnFinished(e -> {
+            paneTimer.setStyle("");
+            gameModel.switchTurn();
+            gameTimerManager.reset();
+            lblTimer.textProperty().bind(gameTimerManager.timeStringProperty());
+            playerInfoManager.updateScores(gameModel.getPlayer1(), gameModel.getPlayer2());
+            playerInfoManager.updateActivePlayerHighlight(gameModel);
         });
-//        System.out.println("ENTER BEFORE ARROW CLICK .....");
-        sqCtrl.setOnArrowClick(isRightArrow -> {
-//        	System.out.println("ENTER ARROW CLICK .....");
-        	executeMove(isRightArrow);
-        	});
-        
-//        squareNode.setOnMouseClicked(e -> handleSquareAction(id));
-
-        gridBoard.add(squareNode, col, row, colSpan, rowSpan);
-
-        squareControllerMap.put(id, sqCtrl);
+        pt.play();
     }
-//    private void loadAndAddSquare(int id, boolean isMandarin, int col, int row, int colSpan, int rowSpan) throws IOException {
-//        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/code/view/Square.fxml"));
-//        Parent squareNode = loader.load();
-//
-//        SquareController sqCtrl = loader.getController();
-//        sqCtrl.setup(id, isMandarin);
-//        
-//        squareNode.setOnMouseClicked(e -> {
-//            // IMPORTANT: Check if the click is on an arrow ImageView
-//            if (e.getTarget() instanceof ImageView) {
-//                ImageView img = (ImageView) e.getTarget();
-//                // Check if it's one of the arrows by fx:id
-//                if (img.getId() != null && (img.getId().equals("arrowLeft") || img.getId().equals("arrowRight"))) {
-//                    // Don't handle as square click, let arrow handler process it
-//                    return;
-//                }
-//            }
-//            handleSquareClick(id);
-//        });
-//
-//        sqCtrl.setOnArrowClick(isRightArrow -> {
-//            executeMove(isRightArrow);
-//        });
-//
-//        gridBoard.add(squareNode, col, row, colSpan, rowSpan);
-//        squareControllerMap.put(id, sqCtrl);
-//    }
-    
-    private void handleSquareClick(int squareId) {
-        if (isAnimating || gameModel.isGameOver()) return;
-        
-        // Ẩn mũi tên ô cũ
-        if (selectedSquareId != null && squareControllerMap.containsKey(selectedSquareId)) {
-            squareControllerMap.get(selectedSquareId).showArrows(false);
-        }
-        
-        // Đổi hình bàn tay nắm
-        if (imgHandClosed != null) handCursor.setImage(imgHandClosed);
 
-        // SỬA: Gọi hàm kiểm tra luật (Đúng phe, có sỏi, không phải Quan)
-        if (isValidSelection(squareId)) {
-             selectedSquareId = squareId;
-             squareControllerMap.get(squareId).showArrows(true);
-             
-             // Quan trọng: Focus vào bàn cờ để nhận sự kiện bàn phím (Left/Right arrow)
-             gridBoard.requestFocus(); 
-        } else {
-            selectedSquareId = null;
-        }
+    private void handleTimerTick() {
+        paneTimer.setStyle(GameConstants.EFFECT_TIMER_TICK);
+        PauseTransition pt = new PauseTransition(Duration.millis(GameConstants.TIMER_TICK_EFFECT_DURATION_MS));
+        pt.setOnFinished(e -> {
+            if (!lblTimer.getText().equals("Time out!!!"))
+                paneTimer.setStyle("");
+        });
+        pt.play();
     }
-    
-    private void handleSquareAction(int squareId) {
-        if (isAnimating || gameModel.isGameOver()) return;
-        boolean isClockwise = showDirectionDialog();
-        boolean success = gameModel.play(squareId, isClockwise);
 
-        if (success) {
-            runMoveAnimation(gameModel.getLastMoveHistory());
-        } else {
-            new Alert(Alert.AlertType.WARNING, "Nước đi không hợp lệ!").show();
-        }
+    private void onMoveExecuted() {
+        gameTimerManager.pause();
+        gameInputListener.setAnimating(true); // Block input
+
+        runMoveAnimation(gameModel.getLastMoveHistory());
     }
-    
-    
-    private boolean isValidSelection(int squareId) {
-        
-        if (gameModel.getBoard().getSquare(squareId).getStones() == 0) return false;
-
-        int side = gameModel.getCurrentPlayer().getSide().ordinal() + 1; // 1 or 2
-        if (side == 1 && (squareId < 0 || squareId > 4)) return false;
-        if (side == 2 && (squareId < 6 || squareId > 10)) return false;
-        
-        return true;
-    }
-    
-    private void executeMove(boolean isRightDirection) {
-        if (selectedSquareId == null) return;
-
-        squareControllerMap.get(selectedSquareId).showArrows(false);
-        
-        boolean isClockwise;
-        int side = gameModel.getCurrentPlayer().getSide().ordinal() + 1; // 1=Bottom, 2=Top
-
-        if (side == 1) { 
-             isClockwise = isRightDirection; 
-        } else { 
-             isClockwise = !isRightDirection; 
-        }
-
-        boolean success = gameModel.play(selectedSquareId, isClockwise);
-
-        if (success) {
-            runMoveAnimation(gameModel.getLastMoveHistory());
-            selectedSquareId = null; // Reset selection
-        } else {
-            new Alert(Alert.AlertType.WARNING, "Nước đi lỗi!").show();
-        }
-    }
-    
-    private boolean showDirectionDialog() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Chọn hướng");
-        alert.setHeaderText("Chọn chiều rải quân:");
-        ButtonType right = new ButtonType("Chiều kim đồng hồ");
-        ButtonType left = new ButtonType("Ngược chiều");
-        alert.getButtonTypes().setAll(right, left);
-        Optional<ButtonType> result = alert.showAndWait();
-        return result.isPresent() && result.get() == right;
-    }
-    
-    
-    // private void runMoveAnimation(List<MoveStep> history) {
-    //     isAnimating = true;
-    //     if (imgHandClosed != null) handCursor.setImage(imgHandClosed); // Tay nắm lại rải quân
-
-    //     Timeline timeline = new Timeline();
-    //     double delayTime = 0;
-    //     double stepDuration = 400; // Chậm lại chút để nhìn tay bay
-
-    //     for (MoveStep step : history) {
-    //         KeyFrame kf = new KeyFrame(Duration.millis(delayTime), e -> {
-    //             // 1. Update số sỏi
-    //             if (squareControllerMap.containsKey(step.squareId)) {
-    //                 squareControllerMap.get(step.squareId).setStones(step.stones);
-                    
-    //                 // 2. Di chuyển bàn tay đến ô đang rải
-    //                 moveHandToSquare(step.squareId);
-    //             }
-    //         });
-    //         timeline.getKeyFrames().add(kf);
-    //         delayTime += stepDuration;
-    //     }
-
-    //     timeline.setOnFinished(e -> {
-    //         isAnimating = false;
-    //         if (imgHandOpen != null) handCursor.setImage(imgHandOpen); // Mở tay ra
-    //         updateInfoLabels();
-    //         if (gameModel.isGameOver()) showWinnerDialog();
-    //     });
-    //     timeline.play();
-    // }
 
     private void runMoveAnimation(List<MoveStep> history) {
-        isAnimating = true;
-        
-        // SHOW system cursor during animation (hand will also be visible doing animation)
-        mainRoot.setCursor(javafx.scene.Cursor.DEFAULT);
-        
-        if (imgHandClosed != null) handCursor.setImage(imgHandClosed); // Closed hand for animation
-        
-        Timeline timeline = new Timeline();
-        double delayTime = 0;
-        double stepDuration = 400;
-
-        for (MoveStep step : history) {
-            KeyFrame kf = new KeyFrame(Duration.millis(delayTime), e -> {
-                if (squareControllerMap.containsKey(step.squareId)) {
-                    squareControllerMap.get(step.squareId).setStones(step.stones);
-                    
-                    // Move hand to square during animation
-                    moveHandToSquare(step.squareId);
-                }
-            });
-            timeline.getKeyFrames().add(kf);
-            delayTime += stepDuration;
-        }
-
-        timeline.setOnFinished(e -> {
-            isAnimating = false;
-            
-            // HIDE system cursor again, keep hand image visible
-            mainRoot.setCursor(javafx.scene.Cursor.NONE);
-            if (imgHandOpen != null) handCursor.setImage(imgHandOpen); // Open hand after animation
-            
-            updateInfoLabels();
-            if (gameModel.isGameOver()) showWinnerDialog();
+        animationService.runMoveAnimation(history, () -> {
+            gameInputListener.setAnimating(false); // Enable input
+            gameTimerManager.reset();
+            playerInfoManager.updateScores(gameModel.getPlayer1(), gameModel.getPlayer2());
+            playerInfoManager.updateActivePlayerHighlight(gameModel);
+            if (gameModel.isGameOver())
+                showWinnerDialog();
         });
-        timeline.play();
-
     }
-    
-    private void moveHandToSquare(int squareId) {
-        SquareController ctrl = squareControllerMap.get(squareId);
-        if (ctrl == null) return;
 
-        // 1. Lấy Node giao diện (rootPane) từ Controller của ô
-        // Bạn cần đảm bảo class SquareController có hàm: public Parent getRoot() { return rootPane; }
-        Parent squareNode = ctrl.getRoot(); 
-
-        // 2. Lấy tọa độ của ô cờ so với Scene (màn hình game)
-        javafx.geometry.Point2D point = squareNode.localToScene(0.0, 0.0);
-
-        // 3. Tính toán vị trí mới cho bàn tay
-        // Lấy tọa độ ô + một nửa kích thước ô để tay vào giữa
-        double targetX = point.getX() + squareNode.getBoundsInLocal().getWidth() / 2;
-        double targetY = point.getY() + squareNode.getBoundsInLocal().getHeight() / 2;
-
-        // Trừ đi toạ độ của mainRoot (nếu mainRoot không full màn hình) 
-        // và trừ 1/2 kích thước ảnh bàn tay để tâm bàn tay trùng tâm ô
-        double handWidth = handCursor.getFitWidth() > 0 ? handCursor.getFitWidth() : handCursor.getImage().getWidth();
-        double handHeight = handCursor.getFitHeight() > 0 ? handCursor.getFitHeight() : handCursor.getImage().getHeight();
-
-        handCursor.setLayoutX(targetX - handWidth / 2);
-        handCursor.setLayoutY(targetY - handHeight / 2);
-    }
-    
-    
-    private void updateInfoLabels() {
-        lblScoreP1.setText("Score: " + gameModel.getPlayer1().getScore());
-        lblScoreP2.setText("Score: " + gameModel.getPlayer2().getScore());
-        lblTurnInfo.setText("Lượt: " + gameModel.getCurrentPlayer().getName());
-    }
-    
-    private void updateBoardStonesImmediate() {
-        for (Map.Entry<Integer, SquareController> entry : squareControllerMap.entrySet()) {
-            entry.getValue().setStones(gameModel.getBoard().getSquare(entry.getKey()).getStones());
-        }
-    }
-    
     private void showWinnerDialog() {
-         String msg = "Kết thúc! P1: " + gameModel.getPlayer1().getScore() + " - P2: " + gameModel.getPlayer2().getScore();
-         new Alert(Alert.AlertType.INFORMATION, msg).show();
+        String msg = "Kết thúc! P1: " + gameModel.getPlayer1().getScore() + " - P2: "
+                + gameModel.getPlayer2().getScore();
+        new Alert(Alert.AlertType.INFORMATION, msg).show();
     }
-    
-    @FXML
+
     public void handleBackToMenu() {
+        gameTimerManager.stop();
         NavigationController.getInstance().showMainMenu();
     }
-    
-  
 }

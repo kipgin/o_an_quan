@@ -11,7 +11,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<StackPane fx:id="rootPane" prefHeight="120.0" prefWidth="100.0" stylesheets="@../../../css/square_style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.code.controller.SquareController">
+<StackPane fx:id="rootPane" prefHeight="120.0" prefWidth="100.0" stylesheets="@../css/square_style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.code.controller.board.SquareController">
 
     <!-- 1. Hình nền ô -->
 <!--     <Rectangle fx:id="bgShape" arcHeight="10.0" arcWidth="10.0" fill="#e0e0e0" height="120.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
@@ -36,7 +36,7 @@
                     StackPane.alignment="CENTER_LEFT">
             <image>
                 <!-- Đường dẫn ảnh, nhớ có dấu / ở đầu -->
-                <Image url="@../../../image/left-arrow.png" />
+                <Image url="@../image/left-arrow.png" />
             </image>
             <StackPane.margin>
                 <Insets left="5.0" />
@@ -48,7 +48,7 @@
                    pickOnBounds="true" mouseTransparent="false" preserveRatio="true" visible="false" 
                     StackPane.alignment="CENTER_RIGHT">
             <image>
-                <Image url="@../../../image/right-arrow.png" />
+                <Image url="@../image/right-arrow.png" />
             </image>
             <StackPane.margin>
                 <Insets right="5.0" />

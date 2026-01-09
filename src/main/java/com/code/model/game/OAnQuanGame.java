@@ -7,6 +7,8 @@ import com.code.model.enums.Direction;
 import com.code.model.enums.PlayerSide;
 import com.code.model.rules.GameRule;
 import com.code.model.rules.StandardRule;
+import com.code.model.game.strategy.MoveStrategy;
+import com.code.model.game.strategy.StandardMoveStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +20,7 @@ public class OAnQuanGame {
     private Player currentPlayer;
     private GameRule rule;
     private boolean isGameOver;
-    
+
     private List<MoveStep> moveHistory;
 
     public OAnQuanGame() {
@@ -35,29 +37,27 @@ public class OAnQuanGame {
         this.moveHistory = new ArrayList<>();
     }
 
-    
     public boolean play(int squareId, boolean isClockwise) {
-        if (isGameOver) return false;
+        if (isGameOver)
+            return false;
 
-      
         if (!rule.isValidMove(board, squareId, currentPlayer)) {
             return false;
         }
-        
+
         moveHistory.clear();
-        
+
         Direction direction = Direction.fromBoolean(isClockwise);
 
         performMoveLogic(squareId, direction);
 
         if (rule.isGameOver(board)) {
             isGameOver = true;
-            calculateFinalScore(); 
+            calculateFinalScore();
         } else {
             switchTurn();
-            checkAndRefillEmptySquares(); 
+            checkAndRefillEmptySquares();
         }
-        
 
         return true;
     }
@@ -65,14 +65,14 @@ public class OAnQuanGame {
     private void performMoveLogic(int startId, Direction direction) {
         int currentId = startId;
         Square currentSq = board.getSquare(currentId);
-        int hand = currentSq.pickUpStones(); 
+        int hand = currentSq.pickUpStones();
 
         while (hand > 0) {
 
             currentId = board.getNextIndex(currentId, direction);
             board.getSquare(currentId).addStones(1);
             hand--;
-            
+
             moveHistory.add(new MoveStep(currentId, board.getSquare(currentId).getStones()));
             if (hand == 0) {
                 int nextId = board.getNextIndex(currentId, direction);
@@ -82,10 +82,9 @@ public class OAnQuanGame {
                     hand = nextSq.pickUpStones();
                     currentId = nextId;
                     moveHistory.add(new MoveStep(currentId, 0));
-                }
-                else if (nextSq.isEmpty()) {
+                } else if (nextSq.isEmpty()) {
                     handleCapture(nextId, direction);
-                    break; 
+                    break;
                 }
 
                 else {
@@ -97,7 +96,7 @@ public class OAnQuanGame {
 
     private void handleCapture(int emptySquareId, Direction direction) {
         int currentEmptyId = emptySquareId;
-        
+
         while (true) {
 
             int targetId = board.getNextIndex(currentEmptyId, direction);
@@ -106,29 +105,31 @@ public class OAnQuanGame {
             if (!targetSq.isEmpty()) {
                 int points = targetSq.pickUpStones() + targetSq.getScoreValue();
                 currentPlayer.addScore(points);
-                
+
                 moveHistory.add(new MoveStep(targetId, 0));
-                
+
                 int nextOfTarget = board.getNextIndex(targetId, direction);
                 if (board.getSquare(nextOfTarget).isEmpty()) {
-                     currentEmptyId = nextOfTarget; 
+                    currentEmptyId = nextOfTarget;
                 } else {
-                    break; 
+                    break;
                 }
             } else {
-                break; 
+                break;
             }
         }
     }
 
-    private void switchTurn() {
+    public void switchTurn() {
         currentPlayer = (currentPlayer == player1) ? player2 : player1;
     }
 
     private void checkAndRefillEmptySquares() {
         boolean allEmpty = true;
-        int start = (currentPlayer.getSide() == PlayerSide.BOTTOM_SIDE) ? 0 : 6;
-        int end = (currentPlayer.getSide() == PlayerSide.BOTTOM_SIDE) ? 4 : 10;
+        int start = (currentPlayer.getSide() == PlayerSide.BOTTOM_SIDE) ? GameConstants.P1_START_INDEX
+                : GameConstants.P2_START_INDEX;
+        int end = (currentPlayer.getSide() == PlayerSide.BOTTOM_SIDE) ? GameConstants.P1_END_INDEX
+                : GameConstants.P2_END_INDEX;
 
         for (int i = start; i <= end; i++) {
             if (!board.getSquare(i).isEmpty()) {
@@ -139,14 +140,14 @@ public class OAnQuanGame {
 
         if (allEmpty) {
 
-            if (currentPlayer.getScore() >= 5) { 
-                currentPlayer.minusScore(5);
+            if (currentPlayer.getScore() >= GameConstants.SCORE_TO_BORROW) {
+                currentPlayer.minusScore(GameConstants.BORROW_AMOUNT);
                 for (int i = start; i <= end; i++) {
                     board.getSquare(i).addStones(1);
                 }
             } else {
 
-                currentPlayer.minusScore(5);
+                currentPlayer.minusScore(GameConstants.BORROW_AMOUNT);
                 for (int i = start; i <= end; i++) {
                     board.getSquare(i).addStones(1);
                 }
@@ -156,18 +157,35 @@ public class OAnQuanGame {
 
     private void calculateFinalScore() {
 
-        for (int i = 0; i <= 4; i++) {
+        for (int i = GameConstants.P1_START_INDEX; i <= GameConstants.P1_END_INDEX; i++) {
             player1.addScore(board.getSquare(i).pickUpStones());
         }
-        for (int i = 6; i <= 10; i++) {
+        for (int i = GameConstants.P2_START_INDEX; i <= GameConstants.P2_END_INDEX; i++) {
             player2.addScore(board.getSquare(i).pickUpStones());
         }
     }
 
-    public Board getBoard() { return board; }
-    public Player getPlayer1() { return player1; }
-    public Player getPlayer2() { return player2; }
-    public Player getCurrentPlayer() { return currentPlayer; }
-    public boolean isGameOver() { return isGameOver; }
-    public List<MoveStep> getLastMoveHistory() { return moveHistory; }
+    public Board getBoard() {
+        return board;
+    }
+
+    public Player getPlayer1() {
+        return player1;
+    }
+
+    public Player getPlayer2() {
+        return player2;
+    }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public boolean isGameOver() {
+        return isGameOver;
+    }
+
+    public List<MoveStep> getLastMoveHistory() {
+        return moveHistory;
+    }
 }
