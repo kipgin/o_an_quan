@@ -120,7 +120,7 @@ public class BoardUIService {
                 if (handBoundsInScene.intersects(squareBounds)) {
                     if (isValidValidator.test(squareId)) {
                         shouldHighlight = true;
-                        isLocked = true; // Lock it, no other square can be lit
+                        isLocked = true;
                     }
                 }
             }

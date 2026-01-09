@@ -47,10 +47,10 @@ public class NavigationController {
     }
 
     public void showHelpScreen() {
-        switchScene("/fxml/HelpScreen.fxml", "Ô Ăn Quan - Hướng dẫn");
+        switchScene("/fxml/HelpScreen.fxml", "Ô Ăn Quan - Instruction");
     }
 
     public void showGameScreen() {
-        switchScene("/fxml/GameScreen.fxml", "Ô Ăn Quan - Đang chơi");
+        switchScene("/fxml/GameScreen.fxml", "Ô Ăn Quan - Playing...");
     }
 }

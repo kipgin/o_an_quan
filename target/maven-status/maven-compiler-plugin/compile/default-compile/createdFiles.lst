@@ -1,9 +1,13 @@
+com\code\model\domain\CaptureChain.class
 com\code\model\game\strategy\MoveStrategy.class
 com\code\config\GameConstants.class
 com\code\controller\input\GameInputHandler.class
 com\code\model\entity\Player.class
 com\code\model\entity\CitizenSquare.class
 com\code\controller\managers\GameButtonManager.class
+com\code\model\domain\SquareId.class
+com\code\model\domain\CaptureResult.class
+com\code\model\domain\MoveDecision.class
 com\code\controller\managers\PlayerInfoManager.class
 com\code\model\entity\Square.class
 com\code\controller\managers\GameTimerManager.class
@@ -29,7 +33,9 @@ com\code\controller\managers\GameControlManager.class
 com\code\model\enums\Direction.class
 com\code\model\game\MoveStep.class
 com\code\model\game\strategy\StandardMoveStrategy.class
+com\code\model\domain\Score.class
 com\code\controller\MainMenuController.class
+com\code\model\domain\MoveOutcome.class
 com\code\controller\managers\MusicManager.class
 com\code\view\component\VisualStone.class
 com\code\controller\GameController.class

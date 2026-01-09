@@ -6,16 +6,6 @@ import com.code.model.game.OAnQuanGame;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 
-/**
- * Manages player information display: scores, names, and active player
- * highlighting.
- * 
- * Note: Full Property binding would require Player model to expose
- * IntegerProperty.
- * Current implementation uses manual updates which is acceptable for this
- * game's
- * update frequency (only on turn changes).
- */
 public class PlayerInfoManager {
     private final Label lblScoreP1;
     private final Label lblScoreP2;

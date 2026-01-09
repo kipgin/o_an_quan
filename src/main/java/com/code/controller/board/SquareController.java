@@ -25,7 +25,7 @@ public class SquareController {
 
     private int squareId;
     private boolean isMandarin;
-    private int currentStoneCount = -1; // Track for optimization
+    private int currentStoneCount = -1; 
 
     private static Image imgStone;
     private static Image imgBigStone;
@@ -35,6 +35,7 @@ public class SquareController {
             imgStone = new Image(SquareController.class.getResourceAsStream("/image/small_stone.png"));
             imgBigStone = new Image(SquareController.class.getResourceAsStream("/image/big_stone.png"));
         } catch (Exception e) {
+            //debug
             System.err.println("Chưa có ảnh sỏi, dùng hình vẽ CSS thay thế.");
         }
     }
@@ -45,7 +46,6 @@ public class SquareController {
 
         rootPane.getStyleClass().clear();
         if (isMandarin) {
-            // Apply base mandarin style + specific orientation
             rootPane.getStyleClass().add("mandarin-square");
             rootPane.getStyleClass().add(id == GameConstants.MANDARIN_LEFT_ID ? "mandarin-left" : "mandarin-right");
         } else {
@@ -66,14 +66,11 @@ public class SquareController {
         int displayAmount = Math.min(amount, GameConstants.MAX_VISIBLE_STONES);
         int currentChildren = stoneContainer.getChildren().size();
 
-        // Optimization: Adjust rather than clear and recreate
         if (displayAmount > currentChildren) {
-            // Add more stones
             for (int i = currentChildren; i < displayAmount; i++) {
                 stoneContainer.getChildren().add(createStoneNode());
             }
         } else if (displayAmount < currentChildren) {
-            // Remove excess stones
             stoneContainer.getChildren().remove(displayAmount, currentChildren);
         }
     }

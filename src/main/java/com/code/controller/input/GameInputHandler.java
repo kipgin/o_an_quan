@@ -34,12 +34,10 @@ public class GameInputHandler {
         if (gameModel.isGameOver())
             return;
 
-        // Hide old arrows
         if (selectedSquareId != null) {
             boardUIService.showArrows(selectedSquareId, false);
         }
 
-        // Visual feedback
         handCursorManager.setHandClosed();
 
         if (isValidSelection(squareId)) {
@@ -88,7 +86,6 @@ public class GameInputHandler {
 
         int side = gameModel.getCurrentPlayer().getSide().ordinal() + 1;
 
-        // Use model constants for player square ranges
         if (side == GameConstants.SIDE_BOTTOM &&
                 (squareId < GameConstants.P1_START_INDEX ||
                         squareId > GameConstants.P1_END_INDEX)) {

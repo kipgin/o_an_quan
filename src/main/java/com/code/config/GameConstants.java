@@ -1,9 +1,6 @@
 package com.code.config;
 
-/**
- * Centralized constants for the O An Quan game.
- * Replaces all magic numbers throughout the codebase.
- */
+
 public final class GameConstants {
 
     private GameConstants() {

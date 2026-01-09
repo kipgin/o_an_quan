@@ -1,5 +1,8 @@
 package com.code.model.game.strategy;
 
+import com.code.model.domain.CaptureChain;
+import com.code.model.domain.MoveOutcome;
+import com.code.model.domain.SquareId;
 import com.code.model.entity.Board;
 import com.code.model.entity.Player;
 import com.code.model.entity.Square;
@@ -13,58 +16,27 @@ public class StandardMoveStrategy implements MoveStrategy {
     @Override
     public void performMove(Board board, int startSquareId, Direction direction, Player currentPlayer,
             List<MoveStep> moveHistory) {
-        int currentId = startSquareId;
-        Square currentSq = board.getSquare(currentId);
-        int hand = currentSq.pickUpStones();
 
-        while (hand > 0) {
-            currentId = board.getNextIndex(currentId, direction);
-            board.getSquare(currentId).addStones(1);
-            hand--;
+        SquareId startId = SquareId.of(startSquareId);
 
-            moveHistory.add(new MoveStep(currentId, board.getSquare(currentId).getStones()));
+        MoveOutcome outcome = board.executeMove(startId, direction);
+        moveHistory.addAll(outcome.getSteps());
 
-            if (hand == 0) {
-                int nextId = board.getNextIndex(currentId, direction);
-                Square nextSq = board.getSquare(nextId);
+        if (moveHistory.isEmpty())
+            return;
+        MoveStep lastStep = moveHistory.get(moveHistory.size() - 1);
+        SquareId lastSquareId = SquareId.of(lastStep.getSquareId());
 
-                if (nextSq.canBeMoved()) {
-                    hand = nextSq.pickUpStones();
-                    currentId = nextId;
-                    moveHistory.add(new MoveStep(currentId, 0));
-                } else if (nextSq.isEmpty()) {
-                    handleCapture(board, nextId, direction, currentPlayer, moveHistory);
-                    break;
-                } else {
-                    break;
-                }
+        SquareId nextId = lastSquareId.next(direction);
+        Square nextSq = board.getSquare(nextId);
+
+        if (nextSq.isEmpty()) {
+            CaptureChain chain = board.executeCaptureChain(nextId, direction);
+            if (chain.getTotalPoints() > 0) {
+                currentPlayer.earnScore(chain.getTotalPoints());
+                moveHistory.addAll(chain.getSteps());
             }
         }
-    }
 
-    private void handleCapture(Board board, int emptySquareId, Direction direction, Player currentPlayer,
-            List<MoveStep> moveHistory) {
-        int currentEmptyId = emptySquareId;
-
-        while (true) {
-            int targetId = board.getNextIndex(currentEmptyId, direction);
-            Square targetSq = board.getSquare(targetId);
-
-            if (!targetSq.isEmpty()) {
-                int points = targetSq.pickUpStones() + targetSq.getScoreValue();
-                currentPlayer.addScore(points);
-
-                moveHistory.add(new MoveStep(targetId, 0));
-
-                int nextOfTarget = board.getNextIndex(targetId, direction);
-                if (board.getSquare(nextOfTarget).isEmpty()) {
-                    currentEmptyId = nextOfTarget;
-                } else {
-                    break;
-                }
-            } else {
-                break;
-            }
-        }
     }
 }

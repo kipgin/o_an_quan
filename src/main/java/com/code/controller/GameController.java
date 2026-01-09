@@ -82,18 +82,16 @@ public class GameController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // 1. Initialize Core Services
         gameModel = new OAnQuanGame();
         boardUIService = new BoardUIService(gridBoard);
         handCursorManager = new HandCursorManager(mainRoot, handCursor);
-        handCursor.setVisible(true); // Fix: Ensure cursor is visible immediately
+        handCursor.setVisible(true); 
 
         menuManager = new MenuManager(btnMenu, handCursorManager, this::handleBackToMenu);
         MusicManager.getInstance().attachMusicButton(btnMusic);
         animationService = new AnimationService(handCursor, boardUIService, handCursorManager);
         inputHandler = new GameInputHandler(gameModel, boardUIService, handCursorManager, this::onMoveExecuted);
 
-        // 2. Initialize New Managers
         playerInfoManager = new PlayerInfoManager(lblScoreP1, lblScoreP2, boxPlayer1, boxPlayer2,
                 lblPlayerName1, lblPlayerName2);
         gameTimerManager = new GameTimerManager();
@@ -105,13 +103,11 @@ public class GameController implements Initializable {
                 inputHandler, gameTimerManager,
                 gameButtonManager, btnMusic, btnStop);
 
-        // 3. Setup Timer Bindings & Logic
         lblTimer.textProperty().bind(gameTimerManager.timeStringProperty());
         gameTimerManager.setOnTimeout(this::handleTimeout);
         gameTimerManager.setOnTick(this::handleTimerTick);
         gameTimerManager.start();
 
-        // 4. Setup Board Callbacks
         boardUIService.setupBoardUI(
                 (squareId) -> {
                     if (!animationService.isAnimating() && !gameTimerManager.isPaused()) {
@@ -168,14 +164,14 @@ public class GameController implements Initializable {
 
     private void onMoveExecuted() {
         gameTimerManager.pause();
-        gameInputListener.setAnimating(true); // Block input
+        gameInputListener.setAnimating(true); 
 
         runMoveAnimation(gameModel.getLastMoveHistory());
     }
 
     private void runMoveAnimation(List<MoveStep> history) {
         animationService.runMoveAnimation(history, () -> {
-            gameInputListener.setAnimating(false); // Enable input
+            gameInputListener.setAnimating(false); 
             gameTimerManager.reset();
             playerInfoManager.updateScores(gameModel.getPlayer1(), gameModel.getPlayer2());
             playerInfoManager.updateActivePlayerHighlight(gameModel);
@@ -185,7 +181,7 @@ public class GameController implements Initializable {
     }
 
     private void showWinnerDialog() {
-        String msg = "Kết thúc! P1: " + gameModel.getPlayer1().getScore() + " - P2: "
+        String msg = "END GAME! P1: " + gameModel.getPlayer1().getScore() + " - P2: "
                 + gameModel.getPlayer2().getScore();
         new Alert(Alert.AlertType.INFORMATION, msg).show();
     }

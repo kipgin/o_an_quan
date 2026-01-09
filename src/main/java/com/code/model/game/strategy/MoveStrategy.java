@@ -8,9 +8,6 @@ import com.code.model.game.MoveStep;
 import java.util.List;
 
 public interface MoveStrategy {
-    /**
-     * Executes the move logic and populates history.
-     */
     void performMove(Board board, int startSquareId, Direction direction, Player currentPlayer,
             List<MoveStep> moveHistory);
 }

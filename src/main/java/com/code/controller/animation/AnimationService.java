@@ -35,10 +35,7 @@ public class AnimationService {
         if (isAnimating)
             return;
         isAnimating = true;
-
-        // Use closed hand during animation
         handCursorManager.setHandClosed();
-
         Timeline timeline = new Timeline();
         double delayTime = 0;
 

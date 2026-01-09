@@ -34,7 +34,7 @@ public class OAnQuanGame {
         initGame();
     }
 
-    private final MoveStrategy moveStrategy; 
+    private final MoveStrategy moveStrategy;
 
     public void initGame() {
         this.board = new Board();
@@ -74,44 +74,27 @@ public class OAnQuanGame {
     }
 
     private void checkAndRefillEmptySquares() {
-        boolean allEmpty = true;
         int start = (currentPlayer.getSide() == PlayerSide.BOTTOM_SIDE) ? GameConstants.P1_START_INDEX
                 : GameConstants.P2_START_INDEX;
         int end = (currentPlayer.getSide() == PlayerSide.BOTTOM_SIDE) ? GameConstants.P1_END_INDEX
                 : GameConstants.P2_END_INDEX;
 
-        for (int i = start; i <= end; i++) {
-            if (!board.getSquare(i).isEmpty()) {
-                allEmpty = false;
-                break;
-            }
-        }
-
-        if (allEmpty) {
-
-            if (currentPlayer.getScore() >= GameConstants.SCORE_TO_BORROW) {
-                currentPlayer.minusScore(GameConstants.BORROW_AMOUNT);
-                for (int i = start; i <= end; i++) {
-                    board.getSquare(i).addStones(1);
-                }
+        if (board.isRegionEmpty(start, end)) {
+            if (currentPlayer.canBorrowStones()) {
+                currentPlayer.borrowStones(GameConstants.BORROW_AMOUNT);
             } else {
-
-                currentPlayer.minusScore(GameConstants.BORROW_AMOUNT);
-                for (int i = start; i <= end; i++) {
-                    board.getSquare(i).addStones(1);
-                }
+                currentPlayer.borrowStones(GameConstants.BORROW_AMOUNT);
             }
+            board.distributeStonesToRegion(start, end);
         }
     }
 
     private void calculateFinalScore() {
+        int p1Points = board.collectStones(GameConstants.P1_START_INDEX, GameConstants.P1_END_INDEX);
+        player1.earnScore(p1Points);
 
-        for (int i = GameConstants.P1_START_INDEX; i <= GameConstants.P1_END_INDEX; i++) {
-            player1.addScore(board.getSquare(i).pickUpStones());
-        }
-        for (int i = GameConstants.P2_START_INDEX; i <= GameConstants.P2_END_INDEX; i++) {
-            player2.addScore(board.getSquare(i).pickUpStones());
-        }
+        int p2Points = board.collectStones(GameConstants.P2_START_INDEX, GameConstants.P2_END_INDEX);
+        player2.earnScore(p2Points);
     }
 
     public Board getBoard() {

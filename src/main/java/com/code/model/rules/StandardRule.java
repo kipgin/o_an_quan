@@ -5,6 +5,8 @@ import com.code.model.entity.Player;
 import com.code.model.enums.PlayerSide;
 import com.code.config.GameConstants;
 
+import com.code.model.domain.MoveDecision;
+
 public class StandardRule implements GameRule {
 
     @Override
@@ -16,7 +18,7 @@ public class StandardRule implements GameRule {
                 && (squareId < GameConstants.P2_START_INDEX || squareId > GameConstants.P2_END_INDEX))
             return false;
 
-        return board.getSquare(squareId).canBeMoved();
+        return board.getSquare(squareId).decideMove() == MoveDecision.CONTINUE;
     }
 
     @Override

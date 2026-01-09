@@ -16,6 +16,12 @@ E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\controller\managers\M
 E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\controller\managers\PlayerInfoManager.java
 E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\controller\NavigationController.java
 E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\Main.java
+E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\model\domain\CaptureChain.java
+E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\model\domain\CaptureResult.java
+E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\model\domain\MoveDecision.java
+E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\model\domain\MoveOutcome.java
+E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\model\domain\Score.java
+E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\model\domain\SquareId.java
 E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\model\entity\Board.java
 E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\model\entity\CitizenSquare.java
 E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\model\entity\MandarinSquare.java
