@@ -24,7 +24,6 @@ E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\model\entity\Square.j
 E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\model\enums\Direction.java
 E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\model\enums\PlayerSide.java
 E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\model\enums\StoneType.java
-E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\model\game\GameConstants.java
 E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\model\game\MoveStep.java
 E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\model\game\OAnQuanGame.java
 E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\model\game\strategy\MoveStrategy.java

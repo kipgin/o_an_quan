@@ -6,7 +6,6 @@ import com.code.controller.managers.HandCursorManager;
 import com.code.model.game.OAnQuanGame;
 import javafx.scene.control.Alert;
 
-
 public class GameInputHandler {
     private final OAnQuanGame gameModel;
     private final BoardUIService boardUIService;
@@ -91,13 +90,13 @@ public class GameInputHandler {
 
         // Use model constants for player square ranges
         if (side == GameConstants.SIDE_BOTTOM &&
-                (squareId < com.code.model.game.GameConstants.P1_START_INDEX ||
-                        squareId > com.code.model.game.GameConstants.P1_END_INDEX)) {
+                (squareId < GameConstants.P1_START_INDEX ||
+                        squareId > GameConstants.P1_END_INDEX)) {
             return false;
         }
         if (side == GameConstants.SIDE_TOP &&
-                (squareId < com.code.model.game.GameConstants.P2_START_INDEX ||
-                        squareId > com.code.model.game.GameConstants.P2_END_INDEX)) {
+                (squareId < GameConstants.P2_START_INDEX ||
+                        squareId > GameConstants.P2_END_INDEX)) {
             return false;
         }
 

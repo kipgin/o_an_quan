@@ -3,7 +3,7 @@ package com.code.model.rules;
 import com.code.model.entity.Board;
 import com.code.model.entity.Player;
 import com.code.model.enums.PlayerSide;
-import com.code.model.game.GameConstants;
+import com.code.config.GameConstants;
 
 public class StandardRule implements GameRule {
 

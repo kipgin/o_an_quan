@@ -11,7 +11,6 @@ com\code\controller\HelpScreenController.class
 com\code\model\rules\StandardRule.class
 com\code\model\rules\GameRule.class
 com\code\controller\input\GameInputListener.class
-com\code\model\game\GameConstants.class
 com\code\model\enums\PlayerSide.class
 com\code\controller\NavigationController.class
 com\code\controller\managers\MenuManager.class

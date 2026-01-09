@@ -45,6 +45,8 @@ public class SquareController {
 
         rootPane.getStyleClass().clear();
         if (isMandarin) {
+            // Apply base mandarin style + specific orientation
+            rootPane.getStyleClass().add("mandarin-square");
             rootPane.getStyleClass().add(id == GameConstants.MANDARIN_LEFT_ID ? "mandarin-left" : "mandarin-right");
         } else {
             rootPane.getStyleClass().add("citizen-square");

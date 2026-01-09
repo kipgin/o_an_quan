@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.geometry.Bounds;
+import javafx.scene.image.ImageView;
 import java.util.function.Predicate;
 import java.io.IOException;
 import java.util.HashMap;
@@ -24,9 +25,9 @@ public class BoardUIService {
 
     public void setupBoardUI(Consumer<Integer> onSquareClick, Consumer<Boolean> onArrowClick) {
         try {
-            loadAndAddSquare(com.code.model.game.GameConstants.MANDARIN_BOX_2, true, 0, 0,
+            loadAndAddSquare(GameConstants.MANDARIN_BOX_2, true, 0, 0,
                     GameConstants.MANDARIN_COLSPAN, GameConstants.MANDARIN_ROWSPAN, onSquareClick, onArrowClick);
-            loadAndAddSquare(com.code.model.game.GameConstants.MANDARIN_BOX_1, true, 6, 0,
+            loadAndAddSquare(GameConstants.MANDARIN_BOX_1, true, 6, 0,
                     GameConstants.MANDARIN_COLSPAN, GameConstants.MANDARIN_ROWSPAN, onSquareClick, onArrowClick);
 
             for (int i = 0; i < GameConstants.CITIZENS_PER_SIDE; i++) {
@@ -52,7 +53,7 @@ public class BoardUIService {
         SquareController sqCtrl = loader.getController();
         sqCtrl.setup(id, isMandarin);
         squareNode.setOnMouseClicked(e -> {
-            if (!(e.getTarget() instanceof javafx.scene.image.ImageView)) {
+            if (!(e.getTarget() instanceof ImageView)) {
                 onSquareClick.accept(id);
             }
         });
@@ -115,7 +116,7 @@ public class BoardUIService {
             boolean shouldHighlight = false;
 
             if (!isLocked) {
-                javafx.geometry.Bounds squareBounds = squareRoot.localToScene(squareRoot.getBoundsInLocal());
+                Bounds squareBounds = squareRoot.localToScene(squareRoot.getBoundsInLocal());
                 if (handBoundsInScene.intersects(squareBounds)) {
                     if (isValidValidator.test(squareId)) {
                         shouldHighlight = true;
