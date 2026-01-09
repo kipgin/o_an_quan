@@ -3,7 +3,6 @@ package com.code.controller;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
-
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 
@@ -64,6 +63,10 @@ public class GameController implements Initializable {
     private StackPane paneTimer;
     @FXML
     private Label lblTimer;
+    @FXML
+    private Label lblPlayerName1;
+    @FXML
+    private Label lblPlayerName2;
 
     private OAnQuanGame gameModel;
     private BoardUIService boardUIService;
@@ -91,7 +94,8 @@ public class GameController implements Initializable {
         inputHandler = new GameInputHandler(gameModel, boardUIService, handCursorManager, this::onMoveExecuted);
 
         // 2. Initialize New Managers
-        playerInfoManager = new PlayerInfoManager(lblScoreP1, lblScoreP2, boxPlayer1, boxPlayer2);
+        playerInfoManager = new PlayerInfoManager(lblScoreP1, lblScoreP2, boxPlayer1, boxPlayer2,
+                lblPlayerName1, lblPlayerName2);
         gameTimerManager = new GameTimerManager();
         gameButtonManager = new GameButtonManager();
         gameControlManager = new GameControlManager(btnStop, gameTimerManager);
