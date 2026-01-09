@@ -9,6 +9,7 @@ import javafx.animation.Timeline;
 import javafx.scene.Parent;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
+import javafx.geometry.Point2D;
 
 import java.util.List;
 
@@ -43,8 +44,8 @@ public class AnimationService {
 
         for (MoveStep step : history) {
             KeyFrame kf = new KeyFrame(Duration.millis(delayTime), e -> {
-                boardUIService.setStones(step.squareId, step.stones);
-                moveHandToSquare(step.squareId);
+                boardUIService.setStones(step.getSquareId(), step.getStones());
+                moveHandToSquare(step.getSquareId());
             });
             timeline.getKeyFrames().add(kf);
             delayTime += GameConstants.ANIMATION_STEP_DURATION_MS;
@@ -66,7 +67,7 @@ public class AnimationService {
         if (squareNode == null)
             return;
 
-        javafx.geometry.Point2D point = squareNode.localToScene(0.0, 0.0);
+        Point2D point = squareNode.localToScene(0.0, 0.0);
 
         double targetX = point.getX() + squareNode.getBoundsInLocal().getWidth() / 2;
         double targetY = point.getY() + squareNode.getBoundsInLocal().getHeight() / 2;

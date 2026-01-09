@@ -3,20 +3,20 @@ package com.code.model.entity;
 import com.code.model.enums.PlayerSide;
 
 public class Player {
-    private String name;
+    private final String name;
     private int score;
-    private PlayerSide side;
+    private final PlayerSide side;
 
     public Player(String name, PlayerSide side) {
         this.name = name;
-        this.side = side;
         this.score = 0;
+        this.side = side;
     }
 
     public void addScore(int points) {
         this.score += points;
     }
-    
+
     public void minusScore(int points) {
         this.score -= points;
     }

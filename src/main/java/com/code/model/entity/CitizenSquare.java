@@ -2,16 +2,11 @@ package com.code.model.entity;
 
 public class CitizenSquare extends Square {
     public CitizenSquare(int id, int stones) {
-        super(id, stones);
-    }
-
-    @Override
-    public boolean canBeMoved() {
-        return !isEmpty(); 
+        super(id, stones, true);
     }
 
     @Override
     public int getScoreValue() {
-        return 0; 
+        return 0;
     }
 }

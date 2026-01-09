@@ -1,17 +1,24 @@
 package com.code.model.entity;
 
 public abstract class Square {
-	protected int id;
+    protected final int id;
     protected int stones;
+    protected final boolean movable;
 
-    public Square(int id, int stones) {
+    public Square(int id, int stones, boolean movable) {
         this.id = id;
         this.stones = stones;
+        this.movable = movable;
     }
 
-    public int getId() { return id; }
-    public int getStones() { return stones; }
-    
+    public int getId() {
+        return id;
+    }
+
+    public int getStones() {
+        return stones;
+    }
+
     public void addStones(int amount) {
         this.stones += amount;
     }
@@ -26,6 +33,9 @@ public abstract class Square {
         return this.stones == 0;
     }
 
-    public abstract boolean canBeMoved();
-    public abstract int getScoreValue(); 
+    public boolean canBeMoved() {
+        return movable && !isEmpty();
+    }
+
+    public abstract int getScoreValue();
 }

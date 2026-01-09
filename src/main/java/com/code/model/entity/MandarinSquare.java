@@ -1,15 +1,10 @@
 package com.code.model.entity;
 
 public class MandarinSquare extends Square {
-    private static final int MANDARIN_VALUE = 5; 
+    private static final int MANDARIN_VALUE = 5;
 
     public MandarinSquare(int id, int stones) {
-        super(id, stones);
-    }
-
-    @Override
-    public boolean canBeMoved() {
-        return false; 
+        super(id, stones, false);
     }
 
     @Override
