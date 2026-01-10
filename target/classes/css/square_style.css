@@ -1,0 +1,63 @@
+
+.root {
+    -fx-background-color: #e8dcb5; /* Màu đất vàng nhạt */
+}
+
+.citizen-square {
+    -fx-background-color: #edc76f;
+    -fx-border-color: #8b6914;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 5, 0, 0, 2);
+}
+
+.mandarin-left {
+    -fx-background-color: #edc76f;
+    -fx-border-color: #8b6914;
+    -fx-border-width: 2px;
+    -fx-background-radius: 100px 0 0 100px;
+    -fx-border-radius: 100px 0 0 100px; 
+}
+
+.mandarin-right {
+    -fx-background-color: #edc76f;
+    -fx-border-color: #8b6914;
+    -fx-border-width: 2px;
+    -fx-background-radius: 0 100px 100px 0;
+    -fx-border-radius: 0 100px 100px 0;
+}
+
+
+.stone-shape {
+    -fx-fill: radial-gradient(focus-angle 45deg, focus-distance 20%, center 50% 50%, radius 50%, #f0f0f0, #808080);
+    -fx-stroke: #555;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 3, 0, 1, 1);
+}
+
+.big-stone-shape {
+    -fx-fill: radial-gradient(focus-angle 45deg, focus-distance 20%, center 50% 50%, radius 50%, #ffd700, #b8860b);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 5, 0, 2, 2);
+}
+
+.score-text {
+    -fx-text-fill: #ffffff; 
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-effect: dropshadow(one-pass-box, black, 2, 0, 0, 0);
+}
+
+.arrow-hover {
+    -fx-effect: dropshadow(gaussian, yellow, 15, 0.8, 0, 0);
+}
+
+.arrow-normal {
+    -fx-effect: null;
+}
+
+.square-hover {
+    -fx-effect: dropshadow(gaussian, white, 15, 0.9, 0, 0);
+    -fx-border-width: 1px
+}
+
