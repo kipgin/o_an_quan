@@ -7,7 +7,7 @@
 ---
 
 ## 1. Assignment of Members
-Report in a separate sheet
+Reported in a separate sheet
 
 ---
 
