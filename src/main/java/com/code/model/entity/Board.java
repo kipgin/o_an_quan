@@ -1,8 +1,12 @@
 package com.code.model.entity;
 
 import com.code.config.GameConstants;
-import com.code.model.domain.*;
+import com.code.model.entity.square.Square;
 import com.code.model.enums.Direction;
+import com.code.model.enums.MoveDecision;
+import com.code.model.game.MoveStep;
+import com.code.model.game.MoveResult;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,39 +29,62 @@ public class Board {
         }
     }
 
-    public Square getSquare(SquareId id) {
-        return squares.get(id.getValue());
-    }
-
     public Square getSquare(int id) {
-        if (id < 0 || id >= GameConstants.TOTAL_SQUARES)
-            return null;
+        if (id < 0 || id >= GameConstants.TOTAL_SQUARES) {
+            throw new IllegalArgumentException("Invalid square id: " + id);
+        }
         return squares.get(id);
     }
 
-    public SquareId getNextId(SquareId currentId, Direction direction) {
-        return currentId.next(direction);
+    public int getNextId(int currentId, Direction direction) {
+        if (direction == Direction.CLOCKWISE) {
+            return (currentId + 1) % GameConstants.TOTAL_SQUARES;
+        } else {
+            return (currentId - 1 + GameConstants.TOTAL_SQUARES) % GameConstants.TOTAL_SQUARES;
+        }
     }
 
-    public MoveOutcome executeMove(SquareId startId, Direction direction) {
-        MoveOutcome outcome = new MoveOutcome();
+    public MoveResult executeCompleteMove(int startId, Direction direction) {
+        List<MoveStep> allSteps = new ArrayList<>();
+
+        List<MoveStep> moveSteps = executeMove(startId, direction);
+        allSteps.addAll(moveSteps);
+
+        int totalScore = 0;
+        if (!moveSteps.isEmpty()) {
+            MoveStep lastStep = moveSteps.get(moveSteps.size() - 1);
+            int lastSquareId = lastStep.getSquareId();
+            int nextId = getNextId(lastSquareId, direction);
+
+            if (getSquare(nextId).isEmpty()) {
+                List<MoveStep> captureSteps = new ArrayList<>();
+                totalScore = executeCaptureChain(nextId, direction, captureSteps);
+                allSteps.addAll(captureSteps);
+            }
+        }
+
+        return new MoveResult(allSteps, totalScore);
+    }
+
+    private List<MoveStep> executeMove(int startId, Direction direction) {
+        List<MoveStep> steps = new ArrayList<>();
 
         Square startSquare = getSquare(startId);
         int hand = startSquare.pickUpStones();
 
-        SquareId currentId = startId;
+        int currentId = startId;
 
         while (hand > 0) {
-            currentId = currentId.next(direction);
+            currentId = getNextId(currentId, direction);
             Square currentSquare = getSquare(currentId);
 
             currentSquare.addStones(1);
             hand--;
 
-            outcome.addStep(currentId.getValue(), currentSquare.getStones());
+            steps.add(new MoveStep(currentId, currentSquare.getStones()));
 
             if (hand == 0) {
-                SquareId nextId = currentId.next(direction);
+                int nextId = getNextId(currentId, direction);
                 Square nextSquare = getSquare(nextId);
 
                 MoveDecision decision = nextSquare.decideMove();
@@ -65,28 +92,29 @@ public class Board {
                 if (decision == MoveDecision.CONTINUE) {
                     hand = nextSquare.pickUpStones();
                     currentId = nextId;
-                    outcome.addStep(currentId.getValue(), 0);
+                    steps.add(new MoveStep(currentId, 0));
                 }
-
             }
         }
-        return outcome;
+        return steps;
     }
 
-    public CaptureChain executeCaptureChain(SquareId startEmptyId, Direction direction) {
-        CaptureChain chain = new CaptureChain();
-        SquareId currentEmptyId = startEmptyId;
+    private int executeCaptureChain(int startEmptyId, Direction direction, List<MoveStep> captureSteps) {
+        int totalPoints = 0;
+        int currentEmptyId = startEmptyId;
 
         while (true) {
-            SquareId targetId = currentEmptyId.next(direction);
+            int targetId = getNextId(currentEmptyId, direction);
             Square targetSq = getSquare(targetId);
 
-            CaptureResult result = targetSq.capture();
+            // Try to capture
+            if (!targetSq.isEmpty()) {
+                int stones = targetSq.pickUpStones();
+                int points = stones + targetSq.getScoreValue();
+                totalPoints += points;
+                captureSteps.add(new MoveStep(targetId, 0));
 
-            if (result.isSuccess()) {
-                chain.addCapture(targetId, result.getPoints());
-
-                SquareId nextOfTarget = targetId.next(direction);
+                int nextOfTarget = getNextId(targetId, direction);
                 if (getSquare(nextOfTarget).isEmpty()) {
                     currentEmptyId = nextOfTarget;
                 } else {
@@ -96,11 +124,7 @@ public class Board {
                 break;
             }
         }
-        return chain;
-    }
-
-    public int getNextIndex(int currentIndex, Direction direction) {
-        return SquareId.of(currentIndex).next(direction).getValue();
+        return totalPoints;
     }
 
     public boolean areMandarinsEmpty() {
@@ -112,29 +136,26 @@ public class Board {
         return Collections.unmodifiableList(squares);
     }
 
-    public void distributeStone(SquareId id) {
-        getSquare(id).addStones(1);
-    }
-
     public int collectStones(int startId, int endId) {
         int total = 0;
         for (int i = startId; i <= endId; i++) {
-            total += getSquare(SquareId.of(i)).pickUpStones();
+            total += getSquare(i).pickUpStones();
         }
         return total;
     }
 
     public boolean isRegionEmpty(int startId, int endId) {
         for (int i = startId; i <= endId; i++) {
-            if (!getSquare(SquareId.of(i)).isEmpty())
+            if (!getSquare(i).isEmpty()) {
                 return false;
+            }
         }
         return true;
     }
 
     public void distributeStonesToRegion(int startId, int endId) {
         for (int i = startId; i <= endId; i++) {
-            getSquare(SquareId.of(i)).addStones(1);
+            getSquare(i).addStones(1);
         }
     }
 }

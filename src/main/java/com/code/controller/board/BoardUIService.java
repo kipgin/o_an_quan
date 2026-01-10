@@ -66,7 +66,7 @@ public class BoardUIService {
 
     public void updateBoardStones(OAnQuanGame gameModel) {
         for (Map.Entry<Integer, SquareController> entry : squareControllerMap.entrySet()) {
-            entry.getValue().setStones(gameModel.getBoard().getSquare(entry.getKey()).getStones());
+            entry.getValue().setStones(gameModel.getSquareStones(entry.getKey()));
         }
     }
 

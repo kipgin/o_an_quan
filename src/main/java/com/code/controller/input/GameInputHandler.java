@@ -80,23 +80,10 @@ public class GameInputHandler {
     }
 
     public boolean isValidSelection(int squareId) {
-        if (gameModel.getBoard().getSquare(squareId).getStones() == 0) {
+        if (gameModel.getSquareStones(squareId) == 0) {
             return false;
         }
 
-        int side = gameModel.getCurrentPlayer().getSide().ordinal() + 1;
-
-        if (side == GameConstants.SIDE_BOTTOM &&
-                (squareId < GameConstants.P1_START_INDEX ||
-                        squareId > GameConstants.P1_END_INDEX)) {
-            return false;
-        }
-        if (side == GameConstants.SIDE_TOP &&
-                (squareId < GameConstants.P2_START_INDEX ||
-                        squareId > GameConstants.P2_END_INDEX)) {
-            return false;
-        }
-
-        return true;
+        return gameModel.isCurrentPlayerOwnsSquare(squareId);
     }
 }

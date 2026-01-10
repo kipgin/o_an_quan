@@ -1,7 +1,7 @@
 package com.code.controller.managers;
 
 import com.code.config.GameConstants;
-import com.code.model.entity.Player;
+import com.code.model.entity.player.Player;
 import com.code.model.game.OAnQuanGame;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;

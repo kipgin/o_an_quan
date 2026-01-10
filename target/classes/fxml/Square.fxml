@@ -13,7 +13,6 @@
 
 <StackPane fx:id="rootPane" prefHeight="120.0" prefWidth="100.0" stylesheets="@../css/square_style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.code.controller.board.SquareController">
 
->
     <FlowPane fx:id="stoneContainer" alignment="CENTER" hgap="3" mouseTransparent="true" prefHeight="120.0" prefWidth="100.0" style="-fx-padding: 10;" vgap="3" />
    
 

@@ -1,7 +1,8 @@
-package com.code.model.entity;
-import com.code.model.domain.MoveDecision;
-import com.code.model.domain.CaptureResult;
+package com.code.model.entity.square;
+
+import com.code.model.enums.MoveDecision;
 import com.code.config.GameConstants;
+
 public abstract class Square {
     protected final int id;
     protected int stones;
@@ -30,8 +31,9 @@ public abstract class Square {
     }
 
     public void addStones(int amount) {
-        if (amount < 0)
+        if (amount < 0) {
             throw new IllegalArgumentException("Cannot add negative stones");
+        }
         this.stones += amount;
     }
 
@@ -45,15 +47,12 @@ public abstract class Square {
         return this.stones == 0;
     }
 
-    public CaptureResult capture() {
-        if (isEmpty()) {
-            return CaptureResult.empty();
+    public MoveDecision decideMove() {
+        if (!movable) {
+            return MoveDecision.STOP_AT_MANDARIN;
         }
-        int totalPoints = pickUpStones() + getScoreValue();
-        return CaptureResult.success(totalPoints);
+        return isEmpty() ? MoveDecision.STOP_AT_EMPTY : MoveDecision.CONTINUE;
     }
-
-    public abstract MoveDecision decideMove();
 
     public abstract int getScoreValue();
 }

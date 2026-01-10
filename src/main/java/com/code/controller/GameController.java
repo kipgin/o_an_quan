@@ -85,7 +85,7 @@ public class GameController implements Initializable {
         gameModel = new OAnQuanGame();
         boardUIService = new BoardUIService(gridBoard);
         handCursorManager = new HandCursorManager(mainRoot, handCursor);
-        handCursor.setVisible(true); 
+        handCursor.setVisible(true);
 
         menuManager = new MenuManager(btnMenu, handCursorManager, this::handleBackToMenu);
         MusicManager.getInstance().attachMusicButton(btnMusic);
@@ -143,7 +143,7 @@ public class GameController implements Initializable {
         PauseTransition pt = new PauseTransition(Duration.seconds(GameConstants.TIMEOUT_DISPLAY_DURATION_SECONDS));
         pt.setOnFinished(e -> {
             paneTimer.setStyle("");
-            gameModel.switchTurn();
+            gameModel.forceTimeoutSwitchTurn();
             gameTimerManager.reset();
             lblTimer.textProperty().bind(gameTimerManager.timeStringProperty());
             playerInfoManager.updateScores(gameModel.getPlayer1(), gameModel.getPlayer2());
@@ -164,14 +164,14 @@ public class GameController implements Initializable {
 
     private void onMoveExecuted() {
         gameTimerManager.pause();
-        gameInputListener.setAnimating(true); 
+        gameInputListener.setAnimating(true);
 
         runMoveAnimation(gameModel.getLastMoveHistory());
     }
 
     private void runMoveAnimation(List<MoveStep> history) {
         animationService.runMoveAnimation(history, () -> {
-            gameInputListener.setAnimating(false); 
+            gameInputListener.setAnimating(false);
             gameTimerManager.reset();
             playerInfoManager.updateScores(gameModel.getPlayer1(), gameModel.getPlayer2());
             playerInfoManager.updateActivePlayerHighlight(gameModel);

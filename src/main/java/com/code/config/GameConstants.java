@@ -50,6 +50,7 @@ public final class GameConstants {
     public static final int SCORE_TO_BORROW = 5;
     public static final int BORROW_AMOUNT = 5;
     public static final int MANDARIN_VALUE = 5;
+    // public static final int CITIZEN_VALUE = 1;
 
     // ==================== UI EFFECTS ====================
     public static final String EFFECT_ACTIVE_PLAYER = "-fx-effect: dropshadow(gaussian, #00FF00, 15, 0.5, 0, 0);";

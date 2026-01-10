@@ -16,7 +16,7 @@ module OAnQuanMaven {
     // no FXML
     // opens css to javafx.graphics, javafx.fxml;
     // opens image to javafx.graphics,javafx.fxml;
-    opens com.code.view to javafx.fxml;
+    // opens com.code.view to javafx.fxml;
 
     exports com.code;
 }
