@@ -96,30 +96,5 @@ The user interacts with the game via the GUI to select squares and directions. T
 
 ## 5. Detail for Classes / Methods
 
-### `OAnQuanGame`
-
-- `makeMove(squareIndex, direction)` — Executes a player's move.
-- `checkEndCondition()` — Checks if the game should end.
-- `switchTurn()` — Changes active player.
-
-### `Board`
-
-- `getNextSquare(index, direction)`
-- `getSquareAt(index)`
-
-### `StandardRule`
-
-- Applies capturing and spreading logic.
-- Calculates chain captures.
-
----
 
 ## 6. Source Usage Declaration
-
-- The project was implemented by the team members.
-- No external game engines were used.
-- Only Java standard libraries and JavaFX were used.
-- Game rules were referenced from public descriptions of Ô ăn quan.
-
-**Declaration:**  
-We declare that this project is our original work. No source code was copied from external repositories.
