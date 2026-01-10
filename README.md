@@ -1,4 +1,4 @@
-# Mini-Project Report  
+# README
 **Project:** Traditional game - Ô ăn quan
 **Group:** 9
 
