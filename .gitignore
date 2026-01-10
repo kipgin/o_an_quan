@@ -1,5 +1,4 @@
-bin
-.project
+.settings
 .classpath
-src/module-info.java
-design/use_case_diagram.asta.lock
+.project
+/target/
