@@ -26,6 +26,7 @@ public class SquareController {
 
     private int squareId;
     private boolean isMandarin;
+    private boolean mandarinCaptured = false; 
     private int currentStoneCount = -1;
 
     private static Image imgStone;
@@ -64,6 +65,10 @@ public class SquareController {
         }
     }
 
+    public void setMandarinCaptured(boolean captured) {
+        this.mandarinCaptured = captured;
+    }
+
     public void setMirrored(boolean mirrored) {
         if (mirrored) {
             rootPane.setScaleX(-1);
@@ -77,7 +82,7 @@ public class SquareController {
     private void renderVisualStones(int amount) {
         stoneContainer.getChildren().clear();
 
-        if (isMandarin && amount >= GameConstants.MANDARIN_VALUE) {
+        if (isMandarin && amount >= GameConstants.MANDARIN_VALUE && !mandarinCaptured) {
             stoneContainer.getChildren().add(createBigStoneNode());
 
             int smallStones = amount - GameConstants.MANDARIN_VALUE;

@@ -1,6 +1,7 @@
 package com.code.util.ui;
 
 import com.code.config.GameConstants;
+import com.code.model.entity.Board;
 import com.code.model.game.OAnQuanGame;
 import com.code.controller.SquareController;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +15,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import com.code.model.entity.square.Square;
+import com.code.model.entity.square.MandarinSquare;
 
 public class BoardUIService {
     private final GridPane gridBoard;
@@ -78,6 +81,22 @@ public class BoardUIService {
             Integer stones = squareStones.get(entry.getKey());
             if (stones != null) {
                 entry.getValue().setStones(stones);
+            }
+        }
+    }
+
+    public void updateMandarinCapturedState(Board board) {
+        updateMandarinSquare(GameConstants.MANDARIN_BOX_1, board);
+        updateMandarinSquare(GameConstants.MANDARIN_BOX_2, board);
+    }
+
+    private void updateMandarinSquare(int squareId, Board board) {
+        SquareController ctrl = squareControllerMap.get(squareId);
+        if (ctrl != null) {
+            Square square = board.getSquare(squareId);
+            if (square instanceof MandarinSquare) {
+                boolean captured = ((MandarinSquare) square).isMandarinCaptured();
+                ctrl.setMandarinCaptured(captured);
             }
         }
     }

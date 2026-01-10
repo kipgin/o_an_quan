@@ -3,6 +3,7 @@ package com.code.controller;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.util.Duration;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -12,9 +13,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-
+import javafx.scene.control.ButtonType;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import com.code.config.GameConstants;
@@ -22,7 +24,7 @@ import com.code.util.managers.MenuManager;
 import com.code.util.managers.GameTimerManager;
 import com.code.util.managers.PlayerInfoManager;
 import com.code.util.managers.GameControlManager;
-import com.code.util.managers.GameButtonManager;
+// import com.code.util.managers.GameButtonManager;
 import com.code.util.managers.MusicManager;
 import com.code.util.ui.BoardUIService;
 import com.code.util.ui.AnimationService;
@@ -69,7 +71,7 @@ public class GameController implements Initializable {
     private GameTimerManager gameTimerManager;
     private PlayerInfoManager playerInfoManager;
     private GameControlManager gameControlManager;
-    private GameButtonManager gameButtonManager;
+    // private GameButtonManager gameButtonManager;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -96,7 +98,7 @@ public class GameController implements Initializable {
         playerInfoManager = new PlayerInfoManager(lblScoreP1, lblScoreP2, boxPlayer1, boxPlayer2,
                 lblPlayerName1, lblPlayerName2);
         gameTimerManager = new GameTimerManager();
-        gameButtonManager = new GameButtonManager();
+
         gameControlManager = new GameControlManager(btnStop, gameTimerManager);
 
         lblTimer.textProperty().bind(gameTimerManager.timeStringProperty());
@@ -135,6 +137,7 @@ public class GameController implements Initializable {
 
     private void updateGameUI() {
         boardUIService.updateBoardStones(gameModel.getBoardSnapshot());
+        boardUIService.updateMandarinCapturedState(gameModel.getBoard());
         boardUIService.updateSquareHoverability(gameModel::canSelectSquare);
         playerInfoManager.updateScores(gameModel.getPlayer1(), gameModel.getPlayer2());
         playerInfoManager.updateActivePlayerHighlight(gameModel);
@@ -145,12 +148,16 @@ public class GameController implements Initializable {
         gameControlManager.setEnabled(false);
 
         List<MoveStep> moveHistory = gameModel.getLastMoveHistory();
+        // checkGameOver();
+
         animationService.animateMove(moveHistory, () -> {
             updateGameUI();
             gameTimerManager.reset();
             gameControlManager.setEnabled(true);
-            checkGameOver();
+            gameControlManager.resetToDefaultState();
+            Platform.runLater(() -> checkGameOver());
         });
+        // checkGameOver();
     }
 
     private void pauseTimerDuringAnimation() {
@@ -166,8 +173,14 @@ public class GameController implements Initializable {
     // private void ti
 
     private void checkGameOver() {
-        if (gameModel.isGameOver()) {
+        boolean gameOver = gameModel.isGameOver();
+        System.out.println("DEBUG: checkGameOver called, isGameOver = " + gameOver);
+
+        if (gameOver) {
+            System.out.println("DEBUG: Game is over! Showing dialog...");
             gameTimerManager.stop();
+            gameControlManager.setEnabled(false);
+            inputHandler.setLocked(true);
             showGameOverDialog();
         }
     }
@@ -175,16 +188,41 @@ public class GameController implements Initializable {
     private void showGameOverDialog() {
         int scoreP1 = gameModel.getPlayer1Score();
         int scoreP2 = gameModel.getPlayer2Score();
-        String winner = scoreP1 > scoreP2 ? gameModel.getPlayer1Name()
-                : (scoreP2 > scoreP1 ? gameModel.getPlayer2Name() : "Draw");
+        String player1Name = gameModel.getPlayer1Name();
+        String player2Name = gameModel.getPlayer2Name();
+
+        String winner;
+        int winningScore;
+
+        if (scoreP1 > scoreP2) {
+            winner = player1Name;
+            winningScore = scoreP1;
+        } else if (scoreP2 > scoreP1) {
+            winner = player2Name;
+            winningScore = scoreP2;
+        } else {
+            winner = "Draw";
+            winningScore = scoreP1;
+        }
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Game Over");
-        alert.setHeaderText("Game Over!");
-        alert.setContentText("Winner: " + winner + "\nScore: " + scoreP1 + " - " + scoreP2);
-        alert.showAndWait();
+        alert.setHeaderText(" " + winner + " wins!");
+        alert.setContentText(
+                "Winner: " + winner + "\n" +
+                        "Winning Score: " + winningScore + "\n\n" +
+                        "Final Scores:\n" +
+                        player1Name + ": " + scoreP1 + "\n" +
+                        player2Name + ": " + scoreP2);
 
-        handleBackToMenu();
+        ButtonType btnBackHome = new ButtonType("Back to Menu");
+        ButtonType btnClose = new ButtonType("Close");
+        alert.getButtonTypes().setAll(btnBackHome, btnClose);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == btnBackHome) {
+            handleBackToMenu();
+        }
     }
 
     private void handleBackToMenu() {
@@ -194,6 +232,7 @@ public class GameController implements Initializable {
     private void handleTimeout() {
         setMessageText("Time out!!!", true);
         inputHandler.setLocked(true);
+        gameControlManager.setEnabled(false);
 
         PauseTransition pause = new PauseTransition(Duration.seconds(GameConstants.TIMEOUT_DISPLAY_DURATION_SECONDS));
         pause.setOnFinished(e -> {
@@ -207,6 +246,9 @@ public class GameController implements Initializable {
                 gameTimerManager.reset();
                 lblTimer.textProperty().bind(gameTimerManager.timeStringProperty());
 
+                gameControlManager.setEnabled(true);
+                gameControlManager.resetToDefaultState();
+
                 checkGameOver();
             } catch (Exception ex) {
                 System.err.println("Error during timeout handling: " + ex.getMessage());
@@ -215,6 +257,8 @@ public class GameController implements Initializable {
                 inputHandler.setLocked(false);
                 gameTimerManager.reset();
                 lblTimer.textProperty().bind(gameTimerManager.timeStringProperty());
+                gameControlManager.setEnabled(true);
+                gameControlManager.resetToDefaultState();
             }
         });
         pause.play();

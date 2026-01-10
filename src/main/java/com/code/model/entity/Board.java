@@ -54,17 +54,14 @@ public class Board {
         if (!moveSteps.isEmpty()) {
             MoveStep lastStep = moveSteps.get(moveSteps.size() - 1);
             int lastSquareId = lastStep.getSquareId();
-            Square lastSquare = getSquare(lastSquareId);
 
-            if (lastSquare.getStones() == 1 && lastSquare.isMovable()) {
-                int nextId = getNextId(lastSquareId, direction);
-                Square nextSquare = getSquare(nextId);
+            int nextId = getNextId(lastSquareId, direction);
+            Square nextSquare = getSquare(nextId);
 
-                if (!nextSquare.isEmpty() && nextSquare.isMovable()) {
-                    List<MoveStep> captureSteps = new ArrayList<>();
-                    totalScore = executeCaptureChain(nextId, direction, captureSteps);
-                    allSteps.addAll(captureSteps);
-                }
+            if (nextSquare.isEmpty() && nextSquare.isMovable()) {
+                List<MoveStep> captureSteps = new ArrayList<>();
+                totalScore = executeCaptureChain(nextId, direction, captureSteps);
+                allSteps.addAll(captureSteps);
             }
         }
 
@@ -90,51 +87,56 @@ public class Board {
             steps.add(new MoveStep(currentId, currentSquare.getStones()));
 
             if (hand == 0) {
-                if (!currentSquare.isMovable()) {
+                int nextId = getNextId(currentId, direction);
+                Square nextSquare = getSquare(nextId);
+
+                if (!nextSquare.isMovable()) {
                     break;
                 }
 
-                if (currentSquare.getStones() > 1) {
-                    hand = currentSquare.pickUpStones();
+                if (!nextSquare.isEmpty()) {
+                    hand = nextSquare.pickUpStones();
+                    currentId = nextId;
                     steps.add(new MoveStep(currentId, 0));
                 } else {
                     break;
                 }
             }
         }
+
         return steps;
     }
 
-    private int executeCaptureChain(int startTargetId, Direction direction, List<MoveStep> captureSteps) {
+    private int executeCaptureChain(int emptySquareId, Direction direction, List<MoveStep> captureSteps) {
         int totalPoints = 0;
-        int currentTargetId = startTargetId;
+        int emptyIdx = emptySquareId;
 
         while (true) {
-            Square targetSq = getSquare(currentTargetId);
+            int targetIdx = getNextId(emptyIdx, direction);
+            Square targetSquare = getSquare(targetIdx);
 
-            int stones = targetSq.pickUpStones();
-
-            int points = stones;
-
-            totalPoints += points;
-            captureSteps.add(new MoveStep(currentTargetId, 0));
-
-            int nextId = getNextId(currentTargetId, direction);
-            Square nextSq = getSquare(nextId);
-
-            if (nextSq.isEmpty()) {
-                int nextNextId = getNextId(nextId, direction);
-                Square nextNextSq = getSquare(nextNextId);
-
-                if (!nextNextSq.isEmpty()) {
-                    currentTargetId = nextNextId;
-                } else {
-                    break;
-                }
-            } else {
+            if (targetSquare.isEmpty()) {
                 break;
             }
+
+            int captured = targetSquare.pickUpStones();
+            totalPoints += captured;
+            captureSteps.add(new MoveStep(targetIdx, 0));
+
+            int checkIdx = getNextId(targetIdx, direction);
+            Square checkSquare = getSquare(checkIdx);
+
+            if (!checkSquare.isMovable()) {
+                break;
+            }
+
+            if (!checkSquare.isEmpty()) {
+                break;
+            }
+
+            emptyIdx = checkIdx;
         }
+
         return totalPoints;
     }
 

@@ -45,4 +45,8 @@ public class GameControlManager {
     public void setEnabled(boolean enabled) {
         btnStop.setDisable(!enabled);
     }
+
+    public void resetToDefaultState() {
+        setButtonImage(btnStop, GameConstants.IMG_STOP);
+    }
 }
