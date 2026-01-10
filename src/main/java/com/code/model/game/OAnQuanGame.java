@@ -242,18 +242,7 @@ public class OAnQuanGame {
             return false;
         if (!rule.isValidMove(board, squareId, currentPlayer)) return false;
         return true;
-//        if (squareId < 0 || squareId >= GameConstants.TOTAL_SQUARES)
-//            return false;
-//
-//        if (squareId == GameConstants.MANDARIN_BOX_1 || squareId == GameConstants.MANDARIN_BOX_2) {
-//            return false;
-//        }
-//
-//        if (board.getSquareStones(squareId) == 0) {
-//            return false;
-//        }
-//
-//        return isCurrentPlayerOwnsSquare(squareId);
+
     }
 
     public Map<Integer, Integer> getBoardSnapshot() {
