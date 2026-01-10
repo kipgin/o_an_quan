@@ -8,10 +8,10 @@
 
 | Name | Student ID | Responsibility | Contribution |
 |------|------------|---------------|--------------|
-| Vũ Đức Tâm | 20230064 | Implemented game engine, turn management, end-game condition, and refactored core logic | 30% |
-| Nguyễn Tuấn Long | 202416269 | Implemented board structure, squares, stone distribution, and refactored board-related code | 30% |
-| Nguyễn Đăng Cao Tuấn | 202400119 | Implemented player logic, scoring, and move validation | 20% |
-| Nguyễn Gia Khánh | 202416803 | Implemented GUI controllers, event handling, and screen navigation | 20% |
+| Vũ Đức Tâm | 20230064 | Implemented GUI layer, screen navigation, dynamic UI updates, and performed major refactoring | 30% |
+| Nguyễn Tuấn Long | 202416269 | Implemented Controller layer, event handling, application flow, and performed major refactoring | 30% |
+| Nguyễn Đăng Cao Tuấn | 202400119 | Implemented Model layer: game rules, board, scoring, and core logic | 20% |
+| Nguyễn Gia Khánh | 202416803 | Implemented Model layer: square behaviors, stone distribution, and validation logic | 20% |
 
 ---
 
