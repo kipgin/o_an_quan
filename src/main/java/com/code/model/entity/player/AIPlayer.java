@@ -11,17 +11,6 @@ public class AIPlayer extends Player {
         this.difficulty = difficulty;
     }
 
-    public boolean canBorrowStones() {
-        return score >= GameConstants.SCORE_TO_BORROW;
-    }
-
-    public void borrowStones(int amount) {
-        if (amount != GameConstants.BORROW_AMOUNT) {
-            throw new IllegalArgumentException("Invalid borrow amount");
-        }
-        this.score = Math.max(0, this.score - amount);
-    }
-
     public int getDifficulty() {
         return difficulty;
     }

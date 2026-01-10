@@ -45,6 +45,7 @@ public class GameInputHandler {
         boolean success = gameModel.play(selectedSquareId, clockwise);
 
         if (success) {
+            boardUIService.highlightSquare(selectedSquareId, false); // Clear highlight
             boardUIService.showArrows(selectedSquareId, false);
             onMoveExecuted.run();
             selectedSquareId = null;

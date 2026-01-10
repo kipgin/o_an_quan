@@ -41,4 +41,8 @@ public class GameControlManager {
     public Button getStopButton() {
         return btnStop;
     }
+
+    public void setEnabled(boolean enabled) {
+        btnStop.setDisable(!enabled);
+    }
 }

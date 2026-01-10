@@ -55,6 +55,7 @@ public class Board {
             MoveStep lastStep = moveSteps.get(moveSteps.size() - 1);
             int lastSquareId = lastStep.getSquareId();
             Square lastSquare = getSquare(lastSquareId);
+
             if (lastSquare.getStones() == 1 && lastSquare.isMovable()) {
                 int nextId = getNextId(lastSquareId, direction);
                 Square nextSquare = getSquare(nextId);

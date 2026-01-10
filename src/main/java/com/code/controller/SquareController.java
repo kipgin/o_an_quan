@@ -78,13 +78,9 @@ public class SquareController {
         stoneContainer.getChildren().clear();
 
         if (isMandarin && amount >= GameConstants.MANDARIN_VALUE) {
-            int bigStones = 1;
+            stoneContainer.getChildren().add(createBigStoneNode());
+
             int smallStones = amount - GameConstants.MANDARIN_VALUE;
-
-            for (int i = 0; i < bigStones; i++) {
-                stoneContainer.getChildren().add(createBigStoneNode());
-            }
-
             for (int i = 0; i < smallStones; i++) {
                 stoneContainer.getChildren().add(createStoneNode());
             }

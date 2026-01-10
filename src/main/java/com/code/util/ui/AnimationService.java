@@ -8,22 +8,25 @@ import javafx.scene.Parent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
+import javafx.scene.Node;
 import javafx.geometry.Point2D;
-
+import javafx.geometry.Bounds;
+import java.util.function.Function;
+import java.util.function.BiConsumer;
 import java.util.List;
 
 public class AnimationService {
 
     private final ImageView handCursor;
-    private final java.util.function.Function<Integer, javafx.scene.Node> nodeProvider;
-    private final java.util.function.BiConsumer<Integer, Integer> stoneUpdater;
+    private final Function<Integer, Node> nodeProvider;
+    private final BiConsumer<Integer, Integer> stoneUpdater;
     private boolean isAnimating = false;
     private Image imgHandOpen;
     private Image imgHandClosed;
 
     public AnimationService(ImageView handCursor,
-            java.util.function.Function<Integer, javafx.scene.Node> nodeProvider,
-            java.util.function.BiConsumer<Integer, Integer> stoneUpdater) {
+            Function<Integer, Node> nodeProvider,
+            BiConsumer<Integer, Integer> stoneUpdater) {
         this.handCursor = handCursor;
         this.nodeProvider = nodeProvider;
         this.stoneUpdater = stoneUpdater;
@@ -81,18 +84,27 @@ public class AnimationService {
     }
 
     private void moveHandToSquare(int squareId) {
-        javafx.scene.Node squareNode = nodeProvider.apply(squareId);
-        if (squareNode == null)
+        Node squareNode = nodeProvider.apply(squareId);
+        if (squareNode == null) {
+            System.err.println("Warning: Square node not found for ID: " + squareId);
             return;
+        }
 
-        Point2D point = squareNode.localToScene(0.0, 0.0);
+        if (squareNode.getScene() == null) {
+            System.err.println("Warning: Square node not in scene for ID: " + squareId);
+            return;
+        }
 
-        double targetX = point.getX() + squareNode.getBoundsInLocal().getWidth() / 2;
-        double targetY = point.getY() + squareNode.getBoundsInLocal().getHeight() / 2;
+        Bounds boundsInScene = squareNode.localToScene(squareNode.getBoundsInLocal());
 
-        double handWidth = handCursor.getFitWidth() > 0 ? handCursor.getFitWidth() : handCursor.getImage().getWidth();
+
+        double targetX = boundsInScene.getMinX() + boundsInScene.getWidth() / 2;
+        double targetY = boundsInScene.getMinY() + boundsInScene.getHeight() / 2;
+
+        double handWidth = handCursor.getFitWidth() > 0 ? handCursor.getFitWidth()
+                : (handCursor.getImage() != null ? handCursor.getImage().getWidth() : 50);
         double handHeight = handCursor.getFitHeight() > 0 ? handCursor.getFitHeight()
-                : handCursor.getImage().getHeight();
+                : (handCursor.getImage() != null ? handCursor.getImage().getHeight() : 50);
 
         handCursor.setLayoutX(targetX - handWidth / 2);
         handCursor.setLayoutY(targetY - handHeight / 2);

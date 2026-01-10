@@ -8,9 +8,11 @@ import com.code.model.enums.PlayerSide;
 import com.code.model.rules.GameRule;
 import com.code.model.rules.StandardRule;
 import com.code.config.GameConstants;
+import java.util.Map;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 public class OAnQuanGame {
@@ -23,14 +25,16 @@ public class OAnQuanGame {
     private List<MoveStep> moveHistory;
 
     public OAnQuanGame() {
-        this(new StandardRule());
+        this(new HumanPlayer("Player 1", PlayerSide.BOTTOM_SIDE),
+                new HumanPlayer("Player 2", PlayerSide.TOP_SIDE),
+                new StandardRule());
     }
 
-    public OAnQuanGame(GameRule rule) {
+    public OAnQuanGame(Player player1, Player player2, GameRule rule) {
         this.rule = rule;
         this.board = new Board();
-        this.player1 = new HumanPlayer("Player 1", PlayerSide.BOTTOM_SIDE);
-        this.player2 = new HumanPlayer("Player 2", PlayerSide.TOP_SIDE);
+        this.player1 = player1;
+        this.player2 = player2;
         this.currentPlayer = player1;
         this.isGameOver = false;
         this.moveHistory = new ArrayList<>();
@@ -155,8 +159,8 @@ public class OAnQuanGame {
         return isCurrentPlayerOwnsSquare(squareId);
     }
 
-    public java.util.Map<Integer, Integer> getBoardSnapshot() {
-        java.util.Map<Integer, Integer> snapshot = new java.util.HashMap<>();
+    public Map<Integer, Integer> getBoardSnapshot() {
+        Map<Integer, Integer> snapshot = new HashMap<>();
         for (int i = 0; i < GameConstants.TOTAL_SQUARES; i++) {
             snapshot.put(i, getSquareStones(i));
         }

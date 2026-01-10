@@ -142,10 +142,13 @@ public class GameController implements Initializable {
 
     private void onMoveExecuted() {
         pauseTimerDuringAnimation();
+        gameControlManager.setEnabled(false);
+
         List<MoveStep> moveHistory = gameModel.getLastMoveHistory();
         animationService.animateMove(moveHistory, () -> {
             updateGameUI();
             gameTimerManager.reset();
+            gameControlManager.setEnabled(true);
             checkGameOver();
         });
     }

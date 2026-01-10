@@ -10,6 +10,6 @@ public class MandarinSquare extends Square {
 
     // @Override
     // public int getScoreValue() {
-    //     return GameConstants.MANDARIN_VALUE; 
+    // return GameConstants.MANDARIN_VALUE;
     // }
 }
