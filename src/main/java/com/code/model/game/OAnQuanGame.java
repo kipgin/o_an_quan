@@ -2,6 +2,7 @@ package com.code.model.game;
 
 import com.code.model.entity.Board;
 import com.code.model.entity.player.Player;
+import com.code.model.entity.square.Square;
 import com.code.model.entity.player.HumanPlayer;
 import com.code.model.enums.Direction;
 import com.code.model.enums.PlayerSide;
@@ -51,7 +52,7 @@ public class OAnQuanGame {
 
         moveHistory.clear();
         Direction direction = Direction.fromBoolean(isClockwise);
-        MoveResult result = board.executeCompleteMove(squareId, direction);
+        MoveResult result = executeCompleteMove(squareId, direction);
 
         moveHistory.addAll(result.getAllSteps());
         currentPlayer.earnScore(result.getTotalScore());
@@ -69,7 +70,103 @@ public class OAnQuanGame {
     private void switchTurn() {
         currentPlayer = (currentPlayer == player1) ? player2 : player1;
     }
+    
+    public MoveResult executeCompleteMove(int startId, Direction direction) {
+        List<MoveStep> allSteps = new ArrayList<>();
 
+        List<MoveStep> moveSteps = executeMove(startId, direction);
+        allSteps.addAll(moveSteps);
+
+        int totalScore = 0;
+        if (!moveSteps.isEmpty()) {
+            MoveStep lastStep = moveSteps.get(moveSteps.size() - 1);
+            int lastSquareId = lastStep.getSquareId();
+
+            int nextId = board.getNextId(lastSquareId, direction);
+            Square nextSquare = board.getSquare(nextId);
+
+            if (nextSquare.isEmpty() && nextSquare.isMovable()) {
+                List<MoveStep> captureSteps = new ArrayList<>();
+                totalScore = executeCaptureChain(nextId, direction, captureSteps);
+                allSteps.addAll(captureSteps);
+            }
+        }
+
+        return new MoveResult(allSteps, totalScore);
+    }
+
+    private List<MoveStep> executeMove(int startId, Direction direction) {
+        List<MoveStep> steps = new ArrayList<>();
+
+        Square startSquare = board.getSquare(startId);
+        int hand = startSquare.pickUpStones();
+        steps.add(new MoveStep(startId, 0));
+
+        int currentId = startId;
+
+        while (hand > 0) {
+            currentId = board.getNextId(currentId, direction);
+            Square currentSquare = board.getSquare(currentId);
+
+            currentSquare.addStones(1);
+            hand--;
+
+            steps.add(new MoveStep(currentId, currentSquare.getStones()));
+
+            if (hand == 0) {
+                int nextId = board.getNextId(currentId, direction);
+                Square nextSquare = board.getSquare(nextId);
+
+                if (!nextSquare.isMovable()) {
+                    break;
+                }
+
+                if (!nextSquare.isEmpty()) {
+                    hand = nextSquare.pickUpStones();
+                    currentId = nextId;
+                    steps.add(new MoveStep(currentId, 0));
+                } else {
+                    break;
+                }
+            }
+        }
+
+        return steps;
+    }
+
+    private int executeCaptureChain(int emptySquareId, Direction direction, List<MoveStep> captureSteps) {
+        int totalPoints = 0;
+        int emptyIdx = emptySquareId;
+
+        while (true) {
+            int targetIdx = board.getNextId(emptyIdx, direction);
+            Square targetSquare = board.getSquare(targetIdx);
+
+            if (targetSquare.isEmpty()) {
+                break;
+            }
+
+            int captured = targetSquare.pickUpStones();
+            totalPoints += captured;
+            captureSteps.add(new MoveStep(targetIdx, 0));
+
+            int checkIdx = board.getNextId(targetIdx, direction);
+            Square checkSquare = board.getSquare(checkIdx);
+
+            if (!checkSquare.isMovable()) {
+                break;
+            }
+
+            if (!checkSquare.isEmpty()) {
+                break;
+            }
+
+            emptyIdx = checkIdx;
+        }
+
+        return totalPoints;
+    }
+    
     private void checkAndRefillEmptySquares() {
         if (board.isPlayerRegionEmpty(currentPlayer.getSide())) {
             int borrowAmount = GameConstants.BORROW_AMOUNT;
@@ -138,31 +235,31 @@ public class OAnQuanGame {
         return Collections.unmodifiableList(moveHistory);
     }
 
-    public int getSquareStones(int squareId) {
-        return board.getSquare(squareId).getStones();
-    }
+    
 
     public boolean canSelectSquare(int squareId) {
         if (isGameOver)
             return false;
-        if (squareId < 0 || squareId >= GameConstants.TOTAL_SQUARES)
-            return false;
-
-        if (squareId == GameConstants.MANDARIN_BOX_1 || squareId == GameConstants.MANDARIN_BOX_2) {
-            return false;
-        }
-
-        if (getSquareStones(squareId) == 0) {
-            return false;
-        }
-
-        return isCurrentPlayerOwnsSquare(squareId);
+        if (!rule.isValidMove(board, squareId, currentPlayer)) return false;
+        return true;
+//        if (squareId < 0 || squareId >= GameConstants.TOTAL_SQUARES)
+//            return false;
+//
+//        if (squareId == GameConstants.MANDARIN_BOX_1 || squareId == GameConstants.MANDARIN_BOX_2) {
+//            return false;
+//        }
+//
+//        if (board.getSquareStones(squareId) == 0) {
+//            return false;
+//        }
+//
+//        return isCurrentPlayerOwnsSquare(squareId);
     }
 
     public Map<Integer, Integer> getBoardSnapshot() {
         Map<Integer, Integer> snapshot = new HashMap<>();
         for (int i = 0; i < GameConstants.TOTAL_SQUARES; i++) {
-            snapshot.put(i, getSquareStones(i));
+            snapshot.put(i, board.getSquareStones(i));
         }
         return snapshot;
     }

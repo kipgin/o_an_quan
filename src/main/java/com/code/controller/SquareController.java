@@ -24,7 +24,7 @@ public class SquareController {
     @FXML
     private ImageView arrowRight;
 
-    private int squareId;
+    //private int squareId;
     private boolean isMandarin;
     private boolean mandarinCaptured = false; 
     private int currentStoneCount = -1;
@@ -43,7 +43,7 @@ public class SquareController {
     }
 
     public void setup(int squareId, boolean isMandarin) {
-        this.squareId = squareId;
+        //this.squareId = squareId;
         this.isMandarin = isMandarin;
 
         rootPane.getStyleClass().clear();
