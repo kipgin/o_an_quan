@@ -3,7 +3,7 @@
 **Project title:** Traditional Game – Ô ăn quan  
 **Topic:** Topic 4 — Traditional game: Ô ăn quan
 **Group:** 9  
-**Teacher:** TS. Nguyen Thi Thu Trang
+**Lecturer:** TS. Nguyen Thi Thu Trang
 ---
 
 ## 1. Assignment of Members
@@ -58,6 +58,9 @@ The user interacts with the game via the GUI to select squares and directions. T
 
 ### 4.1 General Class Diagram (Package Level)
 
+![](general_class_diagram.png)
+
+
 **Packages:**
 
 - `controller` — controllers  
@@ -87,6 +90,9 @@ The user interacts with the game via the GUI to select squares and directions. T
 ### 4.2 Detail for Classes / Methods (Noticeable)
 
 #### `Model`
+
+![](detailed_model_class_diagram.png)
+
 ##### `OAnQuanGame`
 - `play(int squareId, boolean isClockwise)`: main method for OAnQuanGame, used to perform move logic
 - `forceTimeOutSwitchTurn()` : method for timeout situation
@@ -108,6 +114,9 @@ The user interacts with the game via the GUI to select squares and directions. T
 
 
 #### `Controller`
+
+![](detailed_controller_class_diagram.png)
+
 ##### `GameController`
 - `onMoveExecuted()` : main method for coordinating model and view
 - `checkGameOver()`: method for manipulating view to show notifications about winner
@@ -120,7 +129,11 @@ The user interacts with the game via the GUI to select squares and directions. T
 ##### `NavigationController`
 - `switchScene(String fxmlPath, String title)`: helper method for switching scenes
 
+---
 #### `Service`
+
+![](detailed_until_class_diagram.png)
+
 ##### `AnimationService`
 - `animateMove(List<MoveStep> history, Runnable onFinishedCallback)` : main method for animating changes, call Runnable when finish
 - `moveHandToSquare(int squareId)` : helper method for animating (move hand to a certain square)
