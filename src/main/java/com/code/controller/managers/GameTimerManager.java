@@ -14,6 +14,7 @@ public class GameTimerManager {
     private Runnable onTimeout;
     private Runnable onTick;
     private boolean isPaused = false;
+    private boolean timeoutHandled = false;
 
     public GameTimerManager() {
         setupTimeline();
@@ -26,8 +27,9 @@ public class GameTimerManager {
                 updateTimeString();
                 if (onTick != null)
                     onTick.run();
-            } else {
-                timeline.stop();
+            } else if (!timeoutHandled) {
+                timeoutHandled = true;
+                updateTimeString(); 
                 if (onTimeout != null)
                     onTimeout.run();
             }
@@ -72,6 +74,7 @@ public class GameTimerManager {
     public void reset() {
         stop();
         timeSeconds = GameConstants.DEFAULT_TIMER_SECONDS;
+        timeoutHandled = false;
         updateTimeString();
         isPaused = false;
         start();

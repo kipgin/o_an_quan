@@ -1,7 +1,12 @@
 .root {
-	/*-fx-background-color: red; */
+    /*-fx-background-color: red; */
     -fx-background-image: url('../image/theme.png');
     -fx-background-size: cover;
     -fx-background-position: center;
     -fx-background-repeat: no-repeat;
+}
+
+.timer-timeout {
+    -fx-text-fill: red;
+    -fx-effect: dropshadow(gaussian, red, 10, 0.5, 0, 0);
 }

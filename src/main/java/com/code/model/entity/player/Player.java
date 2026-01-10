@@ -21,12 +21,9 @@ public abstract class Player {
     }
 
     public void minusScore(int points) {
-        if (points < 0) {
-            throw new IllegalArgumentException("Points must be non-negative");
-        }
-        this.score = Math.max(0, this.score - points);
+        this.score -= points;
     }
-    
+
     public int getScore() {
         return score;
     }

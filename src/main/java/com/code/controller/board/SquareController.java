@@ -9,6 +9,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import java.util.function.Consumer;
+import javafx.scene.Node;
 
 public class SquareController {
 
@@ -25,29 +26,30 @@ public class SquareController {
 
     private int squareId;
     private boolean isMandarin;
-    private int currentStoneCount = -1; 
+    private int currentStoneCount = -1;
 
     private static Image imgStone;
     private static Image imgBigStone;
 
     static {
         try {
-            imgStone = new Image(SquareController.class.getResourceAsStream("/image/small_stone.png"));
-            imgBigStone = new Image(SquareController.class.getResourceAsStream("/image/big_stone.png"));
+            imgStone = new Image(SquareController.class.getResourceAsStream(GameConstants.SMALL_STONE));
+            imgBigStone = new Image(SquareController.class.getResourceAsStream(GameConstants.BIG_STONE));
         } catch (Exception e) {
-            //debug
-            System.err.println("Chưa có ảnh sỏi, dùng hình vẽ CSS thay thế.");
+            // debug
+            System.err.println("No image found, using CSS shape instead.");
         }
     }
 
-    public void setup(int id, boolean isMandarin) {
-        this.squareId = id;
+    public void setup(int squareId, boolean isMandarin) {
+        this.squareId = squareId;
         this.isMandarin = isMandarin;
 
         rootPane.getStyleClass().clear();
         if (isMandarin) {
             rootPane.getStyleClass().add("mandarin-square");
-            rootPane.getStyleClass().add(id == GameConstants.MANDARIN_LEFT_ID ? "mandarin-left" : "mandarin-right");
+            rootPane.getStyleClass()
+                    .add(squareId == GameConstants.MANDARIN_LEFT_ID ? "mandarin-left" : "mandarin-right");
         } else {
             rootPane.getStyleClass().add("citizen-square");
         }
@@ -63,19 +65,28 @@ public class SquareController {
     }
 
     private void renderVisualStones(int amount) {
-        int displayAmount = Math.min(amount, GameConstants.MAX_VISIBLE_STONES);
-        int currentChildren = stoneContainer.getChildren().size();
+        stoneContainer.getChildren().clear();
 
-        if (displayAmount > currentChildren) {
-            for (int i = currentChildren; i < displayAmount; i++) {
+        if (isMandarin && amount >= GameConstants.MANDARIN_VALUE) {
+            int bigStones = 1; 
+            int smallStones = amount - GameConstants.MANDARIN_VALUE; 
+
+            for (int i = 0; i < bigStones; i++) {
+                stoneContainer.getChildren().add(createBigStoneNode());
+            }
+
+            for (int i = 0; i < smallStones; i++) {
                 stoneContainer.getChildren().add(createStoneNode());
             }
-        } else if (displayAmount < currentChildren) {
-            stoneContainer.getChildren().remove(displayAmount, currentChildren);
+        } else {
+            int displayAmount = Math.min(amount, GameConstants.MAX_VISIBLE_STONES);
+            for (int i = 0; i < displayAmount; i++) {
+                stoneContainer.getChildren().add(createStoneNode());
+            }
         }
     }
 
-    private javafx.scene.Node createStoneNode() {
+    private Node createStoneNode() {
         if (imgStone != null) {
             ImageView iv = new ImageView(imgStone);
             iv.setFitWidth(15);
@@ -84,6 +95,20 @@ public class SquareController {
         } else {
             Circle c = new Circle(6);
             c.getStyleClass().add("stone-shape");
+            return c;
+        }
+    }
+
+    private Node createBigStoneNode() {
+        if (imgBigStone != null) {
+            ImageView iv = new ImageView(imgBigStone);
+            iv.setFitWidth(25);
+            iv.setFitHeight(25);
+            iv.getStyleClass().add("big-stone-image");
+            return iv;
+        } else {
+            Circle c = new Circle(12);
+            c.getStyleClass().add("big-stone");
             return c;
         }
     }
@@ -145,5 +170,17 @@ public class SquareController {
 
     public StackPane getRoot() {
         return rootPane;
+    }
+
+    public void setHoverEnabled(boolean enabled) {
+        rootPane.setOnMouseEntered(enabled ? e -> {
+            if (!rootPane.getStyleClass().contains("square-hover")) {
+                rootPane.getStyleClass().add("square-hover");
+            }
+        } : null);
+
+        rootPane.setOnMouseExited(enabled ? e -> {
+            rootPane.getStyleClass().remove("square-hover");
+        } : null);
     }
 }

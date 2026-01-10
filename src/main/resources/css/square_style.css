@@ -1,11 +1,8 @@
-/* Nền toàn màn hình */
 .root {
     -fx-background-color: #e8dcb5;
-    /* Màu đất vàng nhạt */
-    /* Nếu có ảnh nền: -fx-background-image: url('../images/background.jpg'); */
+    
 }
 
-/* Các ô Dân (Citizen) */
 .citizen-square {
     -fx-background-color: #dcc080;
     -fx-border-color: #8b6914;
@@ -15,42 +12,44 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 5, 0, 0, 2);
 }
 
-/* Base style cho các ô Quan (Mandarin) */
 .mandarin-square {
     -fx-background-color: #dcc080;
     -fx-border-color: #8b6914;
     -fx-border-width: 3px;
 }
 
-/* Ô Quan Trái - Hình bán nguyệt hướng trái */
 .mandarin-left {
     -fx-background-radius: 100px 0 0 100px;
     -fx-border-radius: 100px 0 0 100px;
 }
 
-/* Ô Quan Phải - Hình bán nguyệt hướng phải */
 .mandarin-right {
     -fx-background-radius: 0 100px 100px 0;
     -fx-border-radius: 0 100px 100px 0;
 }
 
-/* Hình viên sỏi (nếu không dùng ảnh) */
 .stone-shape {
     -fx-fill: radial-gradient(focus-angle 45deg, focus-distance 20%, center 50% 50%, radius 50%, #f0f0f0, #808080);
     -fx-stroke: #555;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 3, 0, 1, 1);
 }
 
-/* Hình Quan (viên đá to) */
+.big-stone {
+    -fx-fill: radial-gradient(focus-angle 45deg, focus-distance 20%, center 50% 50%, radius 50%, #ff8c00, #d97500);
+    -fx-stroke: #b86500;
+    -fx-stroke-width: 1.5;
+    -fx-effect: dropshadow(gaussian, rgba(255, 140, 0, 0.7), 4, 0, 2, 2);
+}
+
+
 .big-stone-shape {
     -fx-fill: radial-gradient(focus-angle 45deg, focus-distance 20%, center 50% 50%, radius 50%, #ffd700, #b8860b);
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 5, 0, 2, 2);
 }
 
-/* Text điểm số */
+
 .score-text {
     -fx-fill: #5c4033;
-    /* Màu nâu đất đậm */
     -fx-font-weight: bold;
     -fx-font-family: "Segoe UI", sans-serif;
 }
@@ -63,7 +62,6 @@
     -fx-effect: null;
 }
 
-/* Square hover effect - White glow */
 .square-hover {
     -fx-effect: dropshadow(gaussian, white, 20, 0.7, 0, 0);
 }

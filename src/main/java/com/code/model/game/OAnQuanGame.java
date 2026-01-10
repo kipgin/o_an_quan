@@ -15,8 +15,8 @@ import java.util.List;
 
 public class OAnQuanGame {
     private final Board board;
-    private final Player player1; 
-    private final Player player2; 
+    private final Player player1;
+    private final Player player2;
     private Player currentPlayer;
     private final GameRule rule;
     private boolean isGameOver;
@@ -67,24 +67,10 @@ public class OAnQuanGame {
     }
 
     private void checkAndRefillEmptySquares() {
-        int start, end;
-        if (currentPlayer.getSide() == PlayerSide.BOTTOM_SIDE) {
-            start = GameConstants.P1_START_INDEX;
-            end = GameConstants.P1_END_INDEX;
-        } else {
-            start = GameConstants.P2_START_INDEX;
-            end = GameConstants.P2_END_INDEX;
-        }
-
-        if (board.isRegionEmpty(start, end)) {
-            if (currentPlayer instanceof HumanPlayer) {
-                HumanPlayer human = (HumanPlayer) currentPlayer;
-                if (human.canBorrowStones()) {
-                    human.borrowStones(GameConstants.BORROW_AMOUNT);
-                    board.distributeStonesToRegion(start, end);
-                }
-            }
-            // mo rong cho AIPlayer
+        if (board.isPlayerRegionEmpty(currentPlayer.getSide())) {
+            int borrowAmount = GameConstants.BORROW_AMOUNT;
+            currentPlayer.minusScore(borrowAmount);
+            board.refillPlayerRegion(currentPlayer.getSide());
         }
     }
 
@@ -123,7 +109,6 @@ public class OAnQuanGame {
     public boolean isPlayer1Turn() {
         return currentPlayer == player1;
     }
-
 
     public Board getBoard() {
         return board;

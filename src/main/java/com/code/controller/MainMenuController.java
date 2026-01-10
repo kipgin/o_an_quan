@@ -1,7 +1,11 @@
 package com.code.controller;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+
+import java.util.Optional;
 
 public class MainMenuController {
 
@@ -32,6 +36,18 @@ public class MainMenuController {
     }
 
     private void handleExit() {
-        System.exit(0);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Exit game");
+        alert.setHeaderText("Are you sure to exit the game?");
+        alert.setContentText("Choose Yes to exit the game");
+
+        ButtonType btnYes = new ButtonType("Yes");
+        ButtonType btnNo = new ButtonType("No");
+        alert.getButtonTypes().setAll(btnYes, btnNo);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == btnYes) {
+            System.exit(0);
+        }
     }
 }

@@ -1,13 +1,12 @@
 package com.code.config;
 
-
 public final class GameConstants {
 
     private GameConstants() {
     } // Prevent instantiation
 
     // ==================== TIMER ====================
-    public static final int DEFAULT_TIMER_SECONDS = 60;
+    public static final int DEFAULT_TIMER_SECONDS = 4;
     public static final int TIMEOUT_DISPLAY_DURATION_SECONDS = 2;
     public static final int TIMER_TICK_EFFECT_DURATION_MS = 200;
 
@@ -34,8 +33,7 @@ public final class GameConstants {
     // ==================== STONES ====================
     public static final int MAX_VISIBLE_STONES = 20;
     public static final int INITIAL_CITIZEN_STONES = 5;
-    public static final int INITIAL_MANDARIN_STONES = 0;
-
+    public static final int INITIAL_MANDARIN_STONES = 5; // 1 big stone (quân quan = 5 points)
     // ==================== GAME MODEL CONSTANTS ====================
     // Board structure
     public static final int BOARD_SIZE = 12; // 0-11
@@ -50,7 +48,7 @@ public final class GameConstants {
     public static final int SCORE_TO_BORROW = 5;
     public static final int BORROW_AMOUNT = 5;
     public static final int MANDARIN_VALUE = 5;
-    // public static final int CITIZEN_VALUE = 1;
+    public static final int CITIZEN_VALUE = 1;
 
     // ==================== UI EFFECTS ====================
     public static final String EFFECT_ACTIVE_PLAYER = "-fx-effect: dropshadow(gaussian, #00FF00, 15, 0.5, 0, 0);";
@@ -71,6 +69,10 @@ public final class GameConstants {
     // Hand cursor images
     public static final String IMG_HAND_OPEN = IMAGE_PATH + "open_hand_third.png";
     public static final String IMG_HAND_CLOSED = IMAGE_PATH + "open_hand_third.png";
+    // public static final String SMALL_STONE = IMAGE_PATH + "small_stone.png";
+    // public static final String BIG_STONE = IMAGE_PATH + "big_stone.png";
+    public static final String SMALL_STONE = IMAGE_PATH + "no_stone.png";
+    public static final String BIG_STONE = IMAGE_PATH + "no_stone.png";
 
     // Button images
     public static final String IMG_STOP = IMAGE_PATH + "stop.png";

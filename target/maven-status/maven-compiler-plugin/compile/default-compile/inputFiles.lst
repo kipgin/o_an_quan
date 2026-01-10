@@ -5,12 +5,10 @@ E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\controller\board\Squa
 E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\controller\GameController.java
 E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\controller\HelpScreenController.java
 E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\controller\input\GameInputHandler.java
-E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\controller\input\GameInputListener.java
 E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\controller\MainMenuController.java
 E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\controller\managers\GameButtonManager.java
 E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\controller\managers\GameControlManager.java
 E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\controller\managers\GameTimerManager.java
-E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\controller\managers\HandCursorManager.java
 E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\controller\managers\MenuManager.java
 E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\controller\managers\MusicManager.java
 E:\download2\dai_hoc\oop\test_maven\src\main\java\com\code\controller\managers\PlayerInfoManager.java

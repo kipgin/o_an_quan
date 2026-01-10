@@ -2,10 +2,8 @@ package com.code.controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
-
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -20,8 +18,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import com.code.config.GameConstants;
-
-import com.code.controller.managers.HandCursorManager;
 import com.code.controller.managers.MenuManager;
 import com.code.controller.managers.GameTimerManager;
 import com.code.controller.managers.PlayerInfoManager;
@@ -30,7 +26,6 @@ import com.code.controller.managers.GameButtonManager;
 import com.code.controller.board.BoardUIService;
 import com.code.controller.animation.AnimationService;
 import com.code.controller.input.GameInputHandler;
-import com.code.controller.input.GameInputListener;
 import com.code.controller.managers.MusicManager;
 import com.code.model.game.OAnQuanGame;
 import com.code.model.game.MoveStep;
@@ -53,8 +48,6 @@ public class GameController implements Initializable {
     private Button btnMusic;
     @FXML
     private Button btnStop;
-
-    // New UI Fields
     @FXML
     private HBox boxPlayer1;
     @FXML
@@ -72,25 +65,28 @@ public class GameController implements Initializable {
     private BoardUIService boardUIService;
     private AnimationService animationService;
     private GameInputHandler inputHandler;
-    private HandCursorManager handCursorManager;
     private MenuManager menuManager;
     private GameTimerManager gameTimerManager;
     private PlayerInfoManager playerInfoManager;
     private GameControlManager gameControlManager;
     private GameButtonManager gameButtonManager;
-    private GameInputListener gameInputListener;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        setupManagers();
+        setupEventHandlers();
+        updateGameUI();
+    }
+
+    private void setupManagers() {
         gameModel = new OAnQuanGame();
         boardUIService = new BoardUIService(gridBoard);
-        handCursorManager = new HandCursorManager(mainRoot, handCursor);
-        handCursor.setVisible(true);
+        handCursor.setVisible(false);
 
-        menuManager = new MenuManager(btnMenu, handCursorManager, this::handleBackToMenu);
+        menuManager = new MenuManager(btnMenu, this::handleBackToMenu);
         MusicManager.getInstance().attachMusicButton(btnMusic);
-        animationService = new AnimationService(handCursor, boardUIService, handCursorManager);
-        inputHandler = new GameInputHandler(gameModel, boardUIService, handCursorManager, this::onMoveExecuted);
+        animationService = new AnimationService(handCursor, boardUIService);
+        inputHandler = new GameInputHandler(gameModel, boardUIService, this::onMoveExecuted);
 
         playerInfoManager = new PlayerInfoManager(lblScoreP1, lblScoreP2, boxPlayer1, boxPlayer2,
                 lblPlayerName1, lblPlayerName2);
@@ -98,96 +94,132 @@ public class GameController implements Initializable {
         gameButtonManager = new GameButtonManager();
         gameControlManager = new GameControlManager(btnStop, gameTimerManager);
 
-        gameInputListener = new GameInputListener(
-                handCursorManager, boardUIService, menuManager,
-                inputHandler, gameTimerManager,
-                gameButtonManager, btnMusic, btnStop);
-
         lblTimer.textProperty().bind(gameTimerManager.timeStringProperty());
-        gameTimerManager.setOnTimeout(this::handleTimeout);
-        gameTimerManager.setOnTick(this::handleTimerTick);
-        gameTimerManager.start();
 
         boardUIService.setupBoardUI(
                 (squareId) -> {
-                    if (!animationService.isAnimating() && !gameTimerManager.isPaused()) {
+                    if (isInputAllowed()) {
                         inputHandler.handleSquareClick(squareId);
                         gridBoard.requestFocus();
                     }
                 },
                 (isRightArrow) -> {
-                    if (!animationService.isAnimating() && !gameTimerManager.isPaused()) {
+                    if (isInputAllowed()) {
                         inputHandler.handleDirectionSelection(isRightArrow);
                     }
                 });
+    }
 
-        // 5. Initial UI Sync
-        playerInfoManager.updateScores(gameModel.getPlayer1(), gameModel.getPlayer2());
-        playerInfoManager.updateActivePlayerHighlight(gameModel);
-        boardUIService.updateBoardStones(gameModel);
-
+    private void setupEventHandlers() {
+        gameTimerManager.setOnTimeout(this::handleTimeout);
+        gameTimerManager.setOnTick(this::handleTimerTick);
+        gameTimerManager.start();
         setupGlobalInputs();
     }
 
     private void setupGlobalInputs() {
-        mainRoot.setOnMouseMoved(gameInputListener::handleMouseMove);
-        gridBoard.setFocusTraversable(true);
-        gridBoard.setOnKeyPressed(gameInputListener::handleKeyPressed);
+        mainRoot.setOnKeyPressed(e -> {
+            if (isInputAllowed())
+                inputHandler.handleKeyPress(e);
+        });
     }
 
-    private void handleTimeout() {
-        lblTimer.textProperty().unbind();
-        lblTimer.setText("Time out!!!");
-        paneTimer.setStyle(GameConstants.EFFECT_TIMEOUT);
-
-        PauseTransition pt = new PauseTransition(Duration.seconds(GameConstants.TIMEOUT_DISPLAY_DURATION_SECONDS));
-        pt.setOnFinished(e -> {
-            paneTimer.setStyle("");
-            gameModel.forceTimeoutSwitchTurn();
-            gameTimerManager.reset();
-            lblTimer.textProperty().bind(gameTimerManager.timeStringProperty());
-            playerInfoManager.updateScores(gameModel.getPlayer1(), gameModel.getPlayer2());
-            playerInfoManager.updateActivePlayerHighlight(gameModel);
-        });
-        pt.play();
+    private boolean isInputAllowed() {
+        return !animationService.isAnimating() && !gameTimerManager.isPaused();
     }
 
-    private void handleTimerTick() {
-        paneTimer.setStyle(GameConstants.EFFECT_TIMER_TICK);
-        PauseTransition pt = new PauseTransition(Duration.millis(GameConstants.TIMER_TICK_EFFECT_DURATION_MS));
-        pt.setOnFinished(e -> {
-            if (!lblTimer.getText().equals("Time out!!!"))
-                paneTimer.setStyle("");
-        });
-        pt.play();
+    private void updateGameUI() {
+        boardUIService.updateBoardStones(gameModel);
+        boardUIService.updateSquareHoverability(gameModel);
+        playerInfoManager.updateScores(gameModel.getPlayer1(), gameModel.getPlayer2());
+        playerInfoManager.updateActivePlayerHighlight(gameModel);
     }
 
     private void onMoveExecuted() {
-        gameTimerManager.pause();
-        gameInputListener.setAnimating(true);
-
-        runMoveAnimation(gameModel.getLastMoveHistory());
-    }
-
-    private void runMoveAnimation(List<MoveStep> history) {
-        animationService.runMoveAnimation(history, () -> {
-            gameInputListener.setAnimating(false);
+        pauseTimerDuringAnimation();
+        List<MoveStep> moveHistory = gameModel.getLastMoveHistory();
+        animationService.animateMove(moveHistory, () -> {
+            updateGameUI();
             gameTimerManager.reset();
-            playerInfoManager.updateScores(gameModel.getPlayer1(), gameModel.getPlayer2());
-            playerInfoManager.updateActivePlayerHighlight(gameModel);
-            if (gameModel.isGameOver())
-                showWinnerDialog();
+            checkGameOver();
         });
     }
 
-    private void showWinnerDialog() {
-        String msg = "END GAME! P1: " + gameModel.getPlayer1().getScore() + " - P2: "
-                + gameModel.getPlayer2().getScore();
-        new Alert(Alert.AlertType.INFORMATION, msg).show();
+    private void pauseTimerDuringAnimation() {
+        if (!gameTimerManager.isPaused()) {
+            gameTimerManager.pause();
+        }
     }
 
-    public void handleBackToMenu() {
-        gameTimerManager.stop();
+    private void checkGameOver() {
+        if (gameModel.isGameOver()) {
+            gameTimerManager.stop();
+            showGameOverDialog();
+        }
+    }
+
+    private void showGameOverDialog() {
+        int scoreP1 = gameModel.getPlayer1Score();
+        int scoreP2 = gameModel.getPlayer2Score();
+        String winner = scoreP1 > scoreP2 ? gameModel.getPlayer1Name()
+                : (scoreP2 > scoreP1 ? gameModel.getPlayer2Name() : "Draw");
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Game Over");
+        alert.setHeaderText("Game Over!");
+        alert.setContentText("Winner: " + winner + "\nScore: " + scoreP1 + " - " + scoreP2);
+        alert.showAndWait();
+
+        handleBackToMenu();
+    }
+
+    private void handleBackToMenu() {
         NavigationController.getInstance().showMainMenu();
+    }
+
+    private void handleTimeout() {
+        setMessageText("Time out!!!", true);
+        inputHandler.setLocked(true);
+
+        PauseTransition pause = new PauseTransition(Duration.seconds(GameConstants.TIMEOUT_DISPLAY_DURATION_SECONDS));
+        pause.setOnFinished(e -> {
+            try {
+                setMessageText(null, false); 
+                inputHandler.setLocked(false);
+
+                gameModel.forceTimeoutSwitchTurn();
+                updateGameUI(); 
+
+                gameTimerManager.reset();
+                lblTimer.textProperty().bind(gameTimerManager.timeStringProperty());
+
+                checkGameOver();
+            } catch (Exception ex) {
+                System.err.println("Error during timeout handling: " + ex.getMessage());
+                ex.printStackTrace();
+                lblTimer.setText("00:00");
+                inputHandler.setLocked(false);
+                gameTimerManager.reset();
+                lblTimer.textProperty().bind(gameTimerManager.timeStringProperty());
+            }
+        });
+        pause.play();
+    }
+
+    private void setMessageText(String text, boolean isTimeoutStyle) {
+        if (text != null) {
+            lblTimer.textProperty().unbind();
+            lblTimer.setText(text);
+            if (isTimeoutStyle) {
+                if (!lblTimer.getParent().getStyleClass().contains("timer-timeout")) {
+                    lblTimer.getParent().getStyleClass().add("timer-timeout");
+                }
+            }
+        } else {
+            lblTimer.getParent().getStyleClass().remove("timer-timeout");
+        }
+    }
+
+    private void handleTimerTick() {
     }
 }

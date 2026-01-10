@@ -1,35 +1,21 @@
 package com.code.controller.managers;
 
-import javafx.geometry.Bounds;
 import javafx.scene.control.Button;
-import java.util.HashMap;
-import java.util.Map;
 
 public class GameButtonManager {
-    
-    private final Map<Button, Bounds> boundsCache = new HashMap<>();
-    
-    public void handleButtonHover(Button btn, Bounds handBounds, HandCursorManager cursorManager) {
+
+    public void setupButtonHover(Button btn) {
         if (btn == null)
             return;
 
-        if (!boundsCache.containsKey(btn)) {
-            boundsCache.put(btn, btn.localToScene(btn.getBoundsInLocal()));
-        }
-
-        Bounds btnBounds = boundsCache.get(btn);
-
-        if (handBounds.intersects(btnBounds)) {
+        btn.setOnMouseEntered(e -> {
             if (!btn.getStyleClass().contains("button-hover")) {
                 btn.getStyleClass().add("button-hover");
-                cursorManager.setHandClosed();
             }
-        } else {
-            btn.getStyleClass().remove("button-hover");
-        }
-    }
+        });
 
-    public void clearCache() {
-        boundsCache.clear();
+        btn.setOnMouseExited(e -> {
+            btn.getStyleClass().remove("button-hover");
+        });
     }
 }

@@ -22,6 +22,10 @@ public abstract class Square {
         this.movable = movable;
     }
 
+    public boolean isMovable() {
+        return movable;
+    }
+
     public int getId() {
         return id;
     }

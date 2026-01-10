@@ -17,6 +17,7 @@ import java.util.function.Consumer;
 public class BoardUIService {
     private final GridPane gridBoard;
     private final Map<Integer, SquareController> squareControllerMap;
+    private Integer currentArrowSquareId = null;
 
     public BoardUIService(GridPane gridBoard) {
         this.gridBoard = gridBoard;
@@ -31,12 +32,15 @@ public class BoardUIService {
                     GameConstants.MANDARIN_COLSPAN, GameConstants.MANDARIN_ROWSPAN, onSquareClick, onArrowClick);
 
             for (int i = 0; i < GameConstants.CITIZENS_PER_SIDE; i++) {
-                loadAndAddSquare(10 - i, false, i + 1, 0,
+                int squareId = 10 - i; 
+                loadAndAddSquare(squareId, false, i + 1, 0,
                         GameConstants.CITIZEN_COLSPAN, GameConstants.CITIZEN_ROWSPAN, onSquareClick, onArrowClick);
             }
 
+
             for (int i = 0; i < GameConstants.CITIZENS_PER_SIDE; i++) {
-                loadAndAddSquare(i, false, i + 1, 1,
+                int squareId = i + 1; 
+                loadAndAddSquare(squareId, false, i + 1, 1,
                         GameConstants.CITIZEN_COLSPAN, GameConstants.CITIZEN_ROWSPAN, onSquareClick, onArrowClick);
             }
         } catch (IOException e) {
@@ -52,6 +56,11 @@ public class BoardUIService {
 
         SquareController sqCtrl = loader.getController();
         sqCtrl.setup(id, isMandarin);
+
+        if (id == GameConstants.MANDARIN_BOX_2) {
+            squareNode.setScaleX(-1);
+        }
+
         squareNode.setOnMouseClicked(e -> {
             if (!(e.getTarget() instanceof ImageView)) {
                 onSquareClick.accept(id);
@@ -79,12 +88,18 @@ public class BoardUIService {
         }
     }
 
-    public SquareController getController(int squareId) {
+    public void highlightSquare(int squareId, boolean highlight) {
         SquareController ctrl = squareControllerMap.get(squareId);
-        if (ctrl == null) {
-            throw new IllegalArgumentException("Square not found: " + squareId);
+        if (ctrl != null) {
+            StackPane root = ctrl.getRoot();
+            if (highlight) {
+                if (!root.getStyleClass().contains("square-selected")) {
+                    root.getStyleClass().add("square-selected");
+                }
+            } else {
+                root.getStyleClass().remove("square-selected");
+            }
         }
-        return ctrl;
     }
 
     public Map<Integer, SquareController> getAllControllers() {
@@ -92,8 +107,26 @@ public class BoardUIService {
     }
 
     public void showArrows(int squareId, boolean show) {
+        if (show && currentArrowSquareId != null && currentArrowSquareId != squareId) {
+            SquareController prevCtrl = squareControllerMap.get(currentArrowSquareId);
+            if (prevCtrl != null) {
+                prevCtrl.showArrows(false);
+            }
+        }
+
         if (squareControllerMap.containsKey(squareId)) {
             squareControllerMap.get(squareId).showArrows(show);
+            currentArrowSquareId = show ? squareId : null;
+        }
+    }
+
+    public void clearArrows() {
+        if (currentArrowSquareId != null) {
+            SquareController ctrl = squareControllerMap.get(currentArrowSquareId);
+            if (ctrl != null) {
+                ctrl.showArrows(false);
+            }
+            currentArrowSquareId = null;
         }
     }
 
@@ -103,6 +136,21 @@ public class BoardUIService {
             return ctrl.getRoot();
         }
         return null;
+    }
+
+    public void updateSquareHoverability(OAnQuanGame gameModel) {
+        for (Map.Entry<Integer, SquareController> entry : squareControllerMap.entrySet()) {
+            int id = entry.getKey();
+            SquareController ctrl = entry.getValue();
+
+            if (id == GameConstants.MANDARIN_BOX_1 || id == GameConstants.MANDARIN_BOX_2) {
+                ctrl.setHoverEnabled(false);
+            } else {
+                boolean isCurrentPlayerSquare = gameModel.isCurrentPlayerOwnsSquare(id);
+                boolean hasStones = gameModel.getSquareStones(id) > 0;
+                ctrl.setHoverEnabled(isCurrentPlayerSquare && hasStones);
+            }
+        }
     }
 
     public void checkAndHighlightHover(Bounds handBoundsInScene,

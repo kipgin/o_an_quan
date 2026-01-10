@@ -2,11 +2,11 @@ package com.code.controller.animation;
 
 import com.code.config.GameConstants;
 import com.code.controller.board.BoardUIService;
-import com.code.controller.managers.HandCursorManager;
 import com.code.model.game.MoveStep;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.Parent;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 import javafx.geometry.Point2D;
@@ -17,25 +17,40 @@ public class AnimationService {
 
     private final ImageView handCursor;
     private final BoardUIService boardUIService;
-    private final HandCursorManager handCursorManager;
     private boolean isAnimating = false;
+    private Image imgHandOpen;
+    private Image imgHandClosed;
 
-    public AnimationService(ImageView handCursor, BoardUIService boardUIService,
-            HandCursorManager handCursorManager) {
+    public AnimationService(ImageView handCursor, BoardUIService boardUIService) {
         this.handCursor = handCursor;
         this.boardUIService = boardUIService;
-        this.handCursorManager = handCursorManager;
+        loadHandImages();
+    }
+
+    private void loadHandImages() {
+        try {
+            imgHandOpen = new Image(getClass().getResourceAsStream(GameConstants.IMG_HAND_OPEN));
+            imgHandClosed = new Image(getClass().getResourceAsStream(GameConstants.IMG_HAND_CLOSED));
+        } catch (Exception e) {
+            System.err.println("Could not load hand images: " + e.getMessage());
+        }
     }
 
     public boolean isAnimating() {
         return isAnimating;
     }
 
-    public void runMoveAnimation(List<MoveStep> history, Runnable onFinishedCallback) {
-        if (isAnimating)
+    public void animateMove(List<MoveStep> history, Runnable onFinishedCallback) {
+        if (isAnimating || history == null || history.isEmpty())
             return;
+
         isAnimating = true;
-        handCursorManager.setHandClosed();
+
+        handCursor.setVisible(true);
+        if (imgHandClosed != null) {
+            handCursor.setImage(imgHandClosed);
+        }
+
         Timeline timeline = new Timeline();
         double delayTime = 0;
 
@@ -50,7 +65,10 @@ public class AnimationService {
 
         timeline.setOnFinished(e -> {
             isAnimating = false;
-            handCursorManager.setHandOpen();
+            if (imgHandOpen != null) {
+                handCursor.setImage(imgHandOpen);
+            }
+            handCursor.setVisible(false);
 
             if (onFinishedCallback != null) {
                 onFinishedCallback.run();
@@ -75,5 +93,9 @@ public class AnimationService {
 
         handCursor.setLayoutX(targetX - handWidth / 2);
         handCursor.setLayoutY(targetY - handHeight / 2);
+    }
+
+    public void runMoveAnimation(List<MoveStep> history, Runnable onFinishedCallback) {
+        animateMove(history, onFinishedCallback);
     }
 }

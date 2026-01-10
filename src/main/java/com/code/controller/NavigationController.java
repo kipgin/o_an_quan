@@ -24,6 +24,13 @@ public class NavigationController {
 
     public void setStage(Stage stage) {
         this.stage = stage;
+        this.stage.setTitle("Ô Ăn Quan");
+
+        this.stage.setWidth(1280);
+        this.stage.setHeight(720);
+        this.stage.centerOnScreen();
+
+        this.stage.setResizable(true);
     }
 
     private void switchScene(String fxmlPath, String title) {
