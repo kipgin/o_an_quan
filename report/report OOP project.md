@@ -6,15 +6,7 @@
 ---
 
 ## 1. Assignment of Members
-
-## 2. Team Members & Assignment
-
-| Name | Student ID | Coding Responsibility | Contribution |
-|------|------------|----------------------|--------------|
-| Vũ Đức Tâm | 20230064 | Game engine, turn flow, end-game logic | 25% |
-| Nguyễn Tuấn Long | 202416269 | Board and square structure, stone distribution | 25% |
-| Nguyễn Đăng Cao Tuấn | 202400119 | Player classes, scoring, move validation | 25% |
-| Nguyễn Gia Khánh | 202416803 | GUI controllers, event handling, screen navigation | 25% |
+Report in a separate sheet
 
 ---
 
@@ -24,21 +16,19 @@
 
 This project implements the traditional Vietnamese board game **Ô ăn quan** as an interactive desktop application using Java and JavaFX. The goal is to apply Object-Oriented Programming principles such as encapsulation, inheritance, abstraction, and polymorphism to model the game board, players, squares, rules, and gameplay mechanics.
 
-### 2.2 Functional Requirements
-
+### 2.2 Requirements
+- The GUI can be freely designed, focus should remain on OOP design and logic
 - Display the game board with 10 citizen squares and 2 mandarin squares.
-- Allow two players to take turns selecting a square and a direction.
-- Implement stone spreading and capturing rules correctly.
+- Players information need to be visible.
+- Allow two players to take turns selecting a square and a direction, indicate whose turn it currently is.
+- Implement stone spreading and capturing rules correctly and dynamically.
 - Update player scores dynamically.
 - End the game when both mandarin squares are empty.
 - Announce the winner when the game ends.
-- Provide a main menu, help screen, and game screen.
+- Provide a main menu, help screen, and game screen, always include a Back button to return to the menu.
+- Quit the game with confirmation
+- Provide dynamic interactions between components in GUI:
 
-### 2.3 Non-Functional Requirements
-
-- Clear separation between logic and UI.
-- Extensible design for adding new rules or AI players.
-- No use of pre-built game engines.
 
 ---
 
@@ -67,101 +57,100 @@ The user interacts with the game via the GUI to select squares and directions. T
 
 ### 4.1 General Class Diagram (Package Level)
 
-![](general_diagram.png)
+**Packages:**
 
-- `controller` — GUI controllers  
-- `model.entity` — core entities  
+- `controller` — controllers  
+- `model.entity` — core entities of model 
 - `model.game` — game engine  
 - `model.rules` — rule implementations  
-- `util` — utilities  
+- `util` — utilities (managers, services)
 - `config` — constants  
 
+**Relationships:**
+- Model:
++ `OAnQuanGame` composites `Board`, `Player`, and `GameRule`.
++ `Square` is the superclass of `CitizenSquare` and `MandarinSquare`.
++ `Player` is the superclass of `HumanPlayer` and `AIPlayer`.
++ `Game Rule` is an interface, with `StandardRule` is the implementation
++ `Board` composites `Square`
++ Enums: used to provide meaningful context to the model (avoid reusing the same number everywhere)
+
+- Controllers:
++ `GameController` aggregates `OAnQuanGame` and helper services
++ All controllers except `NavigationController` and `SquareController` depends on it.
++ `SquareController` is a part of `BoardUIService` 
+
+- Services and Managers: parts of `GameController`
 ---
 
-### 4.2 Detailed Class Diagram
+### 4.2 Detail for Classes / Methods (Noticeable)
 
-#### 4.2.1 Controller
+#### `Model`
+##### `OAnQuanGame`
+- `play(int squareId, boolean isClockwise)`: main method for OAnQuanGame, used to perform move logic
+- `forceTimeOutSwitchTurn()` : method for timeout situation
+##### `Board`
+- `getNextId(int currentId, Direction direction)`: method for providing next index based on direction
+- `collectStones(int startId, int endId)`: helper for calculating final scores
+##### `Square`
+- `decideMove()`: helper methods for validating move
 
-![](controller_diagram.png)
+##### `StandardRule`
+- `isValidMove(Board board, int squareId, Player player)`: validate move
+- `isGameOver(Board board)`: check game over
 
-#### 4.2.2 Model
+##### `Player`
+- `canBorrowStones()` : helper method for performing a move
 
-![](model_diagram.png)
-
-#### 4.2.3 Util
-
-![](util_diagram.png)
-
----
-## 5.Explanation of the Design
-
-### 5.1 Overall Architecture
-
-The system is designed using a layered object-oriented architecture. The code is divided into separate packages for game logic, board structure, players, rules, and user interface. This separation ensures that each part of the system has a clear responsibility and can be modified or extended independently.
-
-The core of the system is the game engine, which controls the flow of the game. The board and squares represent the physical state of the game. Players represent the participants and store information such as name and score. Rules define how stones are spread and captured. The user interface handles all interactions with the player.
-
+##### `MoveResult`: record changes after performing a move
 ---
 
-### 5.2 Class Responsibilities
 
-The OAnQuanGame class is responsible for managing the game state, processing turns, validating moves, switching players, and checking for end-game conditions.
+#### `Controller`
+##### `GameController`
+- `onMoveExecuted()` : main method for coordinating model and view
+- `checkGameOver()`: method for manipulating view to show notifications about winner
+- `handleTimeout()`: method for handling situation where timeout happens (skip playing move)
 
-The Board class stores and manages all squares on the board. It provides methods to retrieve squares, move to the next square based on direction, and update stone counts.
+##### `SquareController`
+- `renderVisualStones(int amount)`: show stones based on amount 
+- `setHoverEnabled(boolean enabled)`: highlighting square when mouse entered
 
-The Square class represents a single position on the board. It stores the number of stones and its index. It provides basic operations such as adding and removing stones. CitizenSquare and MandarinSquare are specific types of squares that differ in initial stone count and scoring value.
+##### `NavigationController`
+- `switchScene(String fxmlPath, String title)`: helper method for switching scenes
 
-The Player class stores player information such as name, score, and side. It also defines the interface for making a move. HumanPlayer is a concrete implementation that takes input from the user.
+#### `Service`
+##### `AnimationService`
+- `animateMove(List<MoveStep> history, Runnable onFinishedCallback)` : main method for animating changes, call Runnable when finish
+- `moveHandToSquare(int squareId)` : helper method for animating (move hand to a certain square)
 
-The GameRule interface defines the rules of the game. The StandardRule class implements the official rules of O An Quan, including stone spreading, capturing logic, and scoring.
+##### `BoardUIService`
+- `setupBoardUI(Consumer<Integer> onSquareClick, Consumer<Boolean> onArrowClick)` : method for creating board UI
+- `updateSquareHoverability(Predicate<Integer> canSelectValidator)` : method for updating the highlight ability
 
-The UI controller classes handle user input, screen navigation, and updating the visual representation of the game state.
+##### `GameInputHandler`
+- `resolveDirection(int squareId, boolean isRightArrow)`: helper method for interpreting arrow direction 
+- `handleDirectionSelection(boolean isRightArrow)` : method for handling arrow selection input
+- `handleSquareClick(int squareId)`: method for handling square clicking
 
----
+#### `Manager`
+##### `GameTimerManager`
+- `setupTimeline()` : main method for creating timer
 
-### 5.3 Object-Oriented Principles
+##### `MusicManager`
+- `toggleMute()` : method for switching music playing state (on / off)
 
-Encapsulation is applied by keeping class fields private and exposing only necessary methods. For example, the stone count inside a Square cannot be modified directly by other classes.
+##### `PlayerInfoManager`:
+- `updateActivePlayerHighlight(OAnQuanGame gameModel)` : update current turn based on the model
+- `updateScores(Player p1, Player p2)` : update scores of two players
 
-Inheritance is used to model specialization. CitizenSquare and MandarinSquare inherit from Square, and HumanPlayer inherits from Player.
+##### `GameControlManager`
+- `handlePauseResume()` : method for controlling timer state
 
-Polymorphism allows the game engine to work with abstract types. The game logic interacts with Square and Player types without needing to know their concrete implementations.
 
-Abstraction is applied through interfaces and abstract classes such as GameRule and Square, which define behavior without exposing implementation details.
+## 5. References:
+- GUI Idea: https://gamevui.vn/o-an-quan/game
+- Standard Rule: from GUI Idea, and many other sources
+- MVC Architecture: https://www.youtube.com/watch?v=yfckH7hbCEw
 
----
-
-### 5.4 Relationships Between Classes
-
-OAnQuanGame uses Board, Player, and GameRule to execute the game.
-
-Board contains multiple Square objects, representing a composition relationship.
-
-OAnQuanGame keeps references to Player objects and switches between them during gameplay.
-
-UI controllers depend on OAnQuanGame to retrieve and update the game state.
-
-GameRule is implemented by StandardRule and is used by OAnQuanGame to apply game logic.
-
----
-
-### 5.5 Key Method Behavior
-
-The makeMove method in OAnQuanGame performs the main game action. It takes the selected square and direction, collects stones, distributes them across the board, applies capturing rules, updates scores, and then switches the turn.
-
-The checkEndCondition method verifies whether both mandarin squares are empty and ends the game if the condition is met.
-
-The getNextSquare method in Board calculates the next square index based on the current index and chosen direction.
-
----
-
-### 5.6 Design Highlights
-
-The design separates game rules from the game engine, allowing different rule sets to be added easily.
-
-The user interface is decoupled from the game logic, making it possible to change the UI without affecting the core mechanics.
-
-The design supports extensibility and maintainability by clearly dividing responsibilities and following object-oriented principles.
-
----
 
