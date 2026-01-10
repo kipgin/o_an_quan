@@ -1,8 +1,9 @@
 # Object-Oriented Programming Mini-Project Report
 
 **Project title:** Traditional Game – Ô ăn quan  
-**Topic:** Topic 4 — Traditional game: Ô ăn quan  
-
+**Topic:** Topic 4 — Traditional game: Ô ăn quan
+**Group:** 9  
+**Teacher:** TS. Nguyen Thi Thu Trang
 ---
 
 ## 1. Assignment of Members
