@@ -34,8 +34,8 @@
                   <fitHeight>50</fitHeight>
                </ImageView>
                <Label fx:id="lblScoreP1" text="0" textFill="BLACK">
-                  <font><Font name="System Bold" size="14.0" /></font>
-                  <padding><Insets left="40" /></padding>
+                  <font><Font name="System Bold" size="19.0" /></font>
+                  <padding><Insets left="70" /></padding>
                </Label>
             </StackPane>
          </HBox>
@@ -63,8 +63,8 @@
                   <fitHeight>50</fitHeight>
                </ImageView>
                <Label fx:id="lblScoreP2" text="0" textFill="BLACK">
-                  <font><Font name="System Bold" size="14.0" /></font>
-                  <padding><Insets left="40" /></padding>
+                  <font><Font name="System Bold" size="19.0" /></font>
+                  <padding><Insets left="70" /></padding>
                </Label>
             </StackPane>
             <ImageView preserveRatio="true">

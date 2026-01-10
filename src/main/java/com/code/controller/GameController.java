@@ -20,11 +20,9 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import com.code.config.GameConstants;
-import com.code.util.managers.MenuManager;
 import com.code.util.managers.GameTimerManager;
 import com.code.util.managers.PlayerInfoManager;
 import com.code.util.managers.GameControlManager;
-// import com.code.util.managers.GameButtonManager;
 import com.code.util.managers.MusicManager;
 import com.code.util.ui.BoardUIService;
 import com.code.util.ui.AnimationService;
@@ -67,7 +65,7 @@ public class GameController implements Initializable {
     private BoardUIService boardUIService;
     private AnimationService animationService;
     private GameInputHandler inputHandler;
-    private MenuManager menuManager;
+    // private MenuManager menuManager;
     private GameTimerManager gameTimerManager;
     private PlayerInfoManager playerInfoManager;
     private GameControlManager gameControlManager;
@@ -85,7 +83,8 @@ public class GameController implements Initializable {
         boardUIService = new BoardUIService(gridBoard);
         handCursor.setVisible(false);
 
-        menuManager = new MenuManager(btnMenu, this::handleBackToMenu);
+        // menuManager = new MenuManager(btnMenu, this::handleBackToMenu);
+        btnMenu.setOnAction(e -> handleBackToMenu());
         MusicManager.getInstance().attachMusicButton(btnMusic);
 
         animationService = new AnimationService(

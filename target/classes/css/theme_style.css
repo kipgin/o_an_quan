@@ -1,5 +1,4 @@
 .root {
-    /*-fx-background-color: red; */
     -fx-background-image: url('../image/theme.png');
     -fx-background-size: cover;
     -fx-background-position: center;

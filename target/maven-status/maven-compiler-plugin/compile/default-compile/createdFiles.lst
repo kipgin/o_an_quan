@@ -27,6 +27,4 @@ com\code\model\enums\Direction.class
 com\code\model\game\MoveStep.class
 com\code\model\entity\player\AIPlayer.class
 com\code\controller\MainMenuController.class
-com\code\util\managers\GameButtonManager.class
-com\code\util\managers\MenuManager.class
 com\code\controller\GameController.class
