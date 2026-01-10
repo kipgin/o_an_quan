@@ -67,7 +67,7 @@ The user interacts with the game via the GUI to select squares and directions. T
 
 ### 4.1 General Class Diagram (Package Level)
 
-**Packages:**
+![](general_diagram.png)
 
 - `controller` — GUI controllers  
 - `model.entity` — core entities  
@@ -76,28 +76,21 @@ The user interacts with the game via the GUI to select squares and directions. T
 - `util` — utilities  
 - `config` — constants  
 
-**Relationships:**
-
-- `OAnQuanGame` aggregates `Board`, `Player`, and `GameRule`.
-- `Square` is the superclass of `CitizenSquare` and `MandarinSquare`.
-- `Player` is the superclass of `HumanPlayer` and `AIPlayer`.
-- Controllers depend on the game engine.
-
 ---
 
 ### 4.2 Detailed Class Diagram
 
 #### 4.2.1 Controller
 
-![](design/controller_diagram.png)
+![](controller_diagram.png)
 
 #### 4.2.2 Model
 
-![](design/model_diagram.png)
+![](model_diagram.png)
 
 #### 4.2.3 Util
 
-![](design/util_diagram.png)
+![](util_diagram.png)
 
 ---
 
