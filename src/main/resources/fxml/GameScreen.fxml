@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="mainRoot" stylesheets="@../css/theme_style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.code.controller.GameController">
+   <BorderPane AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+   
+   <top>
+      <HBox alignment="CENTER" spacing="20.0" VBox.vgrow="NEVER">
+         <padding><Insets bottom="20" left="20" right="20" top="20" /></padding>
+         
+         <HBox fx:id="boxPlayer1" alignment="CENTER" spacing="10" HBox.hgrow="SOMETIMES">
+            <ImageView preserveRatio="true">
+               <image><Image url="@../image/player.png" /></image>
+               <fitWidth>60</fitWidth>
+               <fitHeight>60</fitHeight>
+            </ImageView>
+            <StackPane>
+               <ImageView preserveRatio="true">
+                  <image><Image url="@../image/score.png" /></image>
+                  <fitWidth>150</fitWidth>
+                  <fitHeight>50</fitHeight>
+               </ImageView>
+               <Label fx:id="lblScoreP1" text="0" textFill="BLACK">
+                  <font><Font name="System Bold" size="19.0" /></font>
+                  <padding><Insets left="70" /></padding>
+               </Label>
+            </StackPane>
+         </HBox>
+         
+         <Region HBox.hgrow="ALWAYS" />
+
+         <StackPane fx:id="paneTimer" HBox.hgrow="NEVER">
+             <ImageView preserveRatio="true">
+                 <image><Image url="@../image/blank_thing.png" /></image>
+                 <fitWidth>120</fitWidth>
+                 <fitHeight>60</fitHeight>
+             </ImageView>
+             <Label fx:id="lblTimer" text="01:00" textFill="BLACK">
+                 <font><Font name="System Bold" size="24.0" /></font>
+             </Label>
+         </StackPane>
+
+         <Region HBox.hgrow="ALWAYS" />
+
+         <HBox fx:id="boxPlayer2" alignment="CENTER" spacing="10" HBox.hgrow="SOMETIMES">
+            <StackPane>
+               <ImageView preserveRatio="true">
+                  <image><Image url="@../image/score.png" /></image>
+                  <fitWidth>150</fitWidth>
+                  <fitHeight>50</fitHeight>
+               </ImageView>
+               <Label fx:id="lblScoreP2" text="0" textFill="BLACK">
+                  <font><Font name="System Bold" size="19.0" /></font>
+                  <padding><Insets left="70" /></padding>
+               </Label>
+            </StackPane>
+            <ImageView preserveRatio="true">
+               <image><Image url="@../image/player.png" /></image>
+               <fitWidth>60</fitWidth>
+               <fitHeight>60</fitHeight>
+            </ImageView>
+         </HBox>
+      </HBox>
+   </top>
+
+   <center>
+      <GridPane fx:id="gridBoard" alignment="CENTER" hgap="5.0" vgap="5.0" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+         <padding><Insets bottom="10" left="10" right="10" top="10" /></padding>
+      </GridPane>
+   </center>
+
+   <bottom>
+      <VBox VBox.vgrow="NEVER">
+         <!-- Control buttons -->
+         <HBox alignment="CENTER" spacing="20">
+            <padding><Insets bottom="10" top="10" /></padding>
+            <Button fx:id="btnMenu" stylesheets="@../css/image_button.css">
+                <graphic>
+                   <ImageView preserveRatio="true">
+                       <image><Image url="@../image/home.png" /></image>
+                       <fitWidth>40</fitWidth>
+                       <fitHeight>40</fitHeight>
+                   </ImageView>
+               </graphic>
+            </Button>
+            
+            <Button fx:id="btnStop" stylesheets="@../css/image_button.css">
+               <graphic>
+                   <ImageView preserveRatio="true">
+                       <image><Image url="@../image/stop.png" /></image>
+                       <fitWidth>40</fitWidth>
+                       <fitHeight>40</fitHeight>
+                   </ImageView>
+               </graphic>
+            </Button>
+
+            <Button fx:id="btnMusic" stylesheets="@../css/image_button.css" />
+         </HBox>
+         
+         <HBox alignment="CENTER" VBox.vgrow="NEVER">
+            <padding><Insets bottom="20" left="40" right="40" /></padding>
+            
+            <Label fx:id="lblPlayerName1" text="Player 1" textFill="WHITE" HBox.hgrow="SOMETIMES">
+               <font><Font name="System Bold" size="25.0" /></font>
+            </Label>
+            
+            <Region HBox.hgrow="ALWAYS" />
+            
+            <Label fx:id="lblPlayerName2" text="Player 2" textFill="WHITE" HBox.hgrow="SOMETIMES">
+               <font><Font name="System Bold" size="25.0" /></font>
+            </Label>
+         </HBox>
+      </VBox>
+   </bottom>
+	
+	<ImageView fx:id="handCursor" mouseTransparent="true" pickOnBounds="true" preserveRatio="true" visible="false">
+      <fitWidth>60</fitWidth>
+      <fitHeight>60</fitHeight>
+   </ImageView>
+	
+</BorderPane>
+
+</AnchorPane>
