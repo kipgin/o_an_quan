@@ -7,14 +7,14 @@
 
 ## 1. Assignment of Members
 
-| Member name | Responsibilities | Contribution |
-|------------|------------------|--------------|
-| Member 1 | Core game logic (`OAnQuanGame`, `Board`, `Square`, rules, move processing) | 25% |
-| Member 2 | Player system (`Player`, `HumanPlayer`, `AIPlayer`), turn management | 25% |
-| Member 3 | GUI & controllers (JavaFX screens, controllers, navigation, input handling) | 25% |
-| Member 4 | Utilities (animation, sounds, timers), testing, integration, bug fixing | 25% |
+## 2. Team Members & Assignment
 
-> Replace "Member X" with actual names.
+| Name | Student ID | Coding Responsibility | Contribution |
+|------|------------|----------------------|--------------|
+| Vũ Đức Tâm | 20230064 | Game engine, turn flow, end-game logic | 25% |
+| Nguyễn Tuấn Long | 202416269 | Board and square structure, stone distribution | 25% |
+| Nguyễn Đăng Cao Tuấn | 202400119 | Player classes, scoring, move validation | 25% |
+| Nguyễn Gia Khánh | 202416803 | GUI controllers, event handling, screen navigation | 25% |
 
 ---
 
@@ -85,6 +85,22 @@ The user interacts with the game via the GUI to select squares and directions. T
 
 ---
 
+### 4.2 Detailed Class Diagram
+
+#### 4.2.1 Controller
+
+![](design/controller_diagram.png)
+
+#### 4.2.2 Model
+
+![](design/model_diagram.png)
+
+#### 4.2.3 Util
+
+![](design/util_diagram.png)
+
+---
+
 ## 5. Detail for Classes / Methods
 
 ### `OAnQuanGame`
@@ -113,4 +129,4 @@ The user interacts with the game via the GUI to select squares and directions. T
 - Game rules were referenced from public descriptions of Ô ăn quan.
 
 **Declaration:**  
-> We declare that this project is our original work. No source code was copied from external repositories.
+We declare that this project is our original work. No source code was copied from external repositories.
