@@ -18,15 +18,15 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import com.code.config.GameConstants;
-import com.code.controller.managers.MenuManager;
-import com.code.controller.managers.GameTimerManager;
-import com.code.controller.managers.PlayerInfoManager;
-import com.code.controller.managers.GameControlManager;
-import com.code.controller.managers.GameButtonManager;
-import com.code.controller.board.BoardUIService;
-import com.code.controller.animation.AnimationService;
-import com.code.controller.input.GameInputHandler;
-import com.code.controller.managers.MusicManager;
+import com.code.util.managers.MenuManager;
+import com.code.util.managers.GameTimerManager;
+import com.code.util.managers.PlayerInfoManager;
+import com.code.util.managers.GameControlManager;
+import com.code.util.managers.GameButtonManager;
+import com.code.util.managers.MusicManager;
+import com.code.util.ui.BoardUIService;
+import com.code.util.ui.AnimationService;
+import com.code.util.ui.GameInputHandler;
 import com.code.model.game.OAnQuanGame;
 import com.code.model.game.MoveStep;
 
@@ -85,7 +85,12 @@ public class GameController implements Initializable {
 
         menuManager = new MenuManager(btnMenu, this::handleBackToMenu);
         MusicManager.getInstance().attachMusicButton(btnMusic);
-        animationService = new AnimationService(handCursor, boardUIService);
+
+        animationService = new AnimationService(
+                handCursor,
+                boardUIService::getSquareRootNode,
+                boardUIService::setStones);
+
         inputHandler = new GameInputHandler(gameModel, boardUIService, this::onMoveExecuted);
 
         playerInfoManager = new PlayerInfoManager(lblScoreP1, lblScoreP2, boxPlayer1, boxPlayer2,
@@ -129,8 +134,8 @@ public class GameController implements Initializable {
     }
 
     private void updateGameUI() {
-        boardUIService.updateBoardStones(gameModel);
-        boardUIService.updateSquareHoverability(gameModel);
+        boardUIService.updateBoardStones(gameModel.getBoardSnapshot());
+        boardUIService.updateSquareHoverability(gameModel::canSelectSquare);
         playerInfoManager.updateScores(gameModel.getPlayer1(), gameModel.getPlayer2());
         playerInfoManager.updateActivePlayerHighlight(gameModel);
     }
@@ -150,6 +155,12 @@ public class GameController implements Initializable {
             gameTimerManager.pause();
         }
     }
+    // private void resumeTimerAfterAnimation() {
+    // if (gameTimerManager.isPaused()) {
+    // gameTimerManager.resume();
+    // }
+    // }
+    // private void ti
 
     private void checkGameOver() {
         if (gameModel.isGameOver()) {
@@ -184,11 +195,11 @@ public class GameController implements Initializable {
         PauseTransition pause = new PauseTransition(Duration.seconds(GameConstants.TIMEOUT_DISPLAY_DURATION_SECONDS));
         pause.setOnFinished(e -> {
             try {
-                setMessageText(null, false); 
+                setMessageText(null, false);
                 inputHandler.setLocked(false);
 
                 gameModel.forceTimeoutSwitchTurn();
-                updateGameUI(); 
+                updateGameUI();
 
                 gameTimerManager.reset();
                 lblTimer.textProperty().bind(gameTimerManager.timeStringProperty());

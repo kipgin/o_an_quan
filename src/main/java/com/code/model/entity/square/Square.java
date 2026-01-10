@@ -58,5 +58,5 @@ public abstract class Square {
         return isEmpty() ? MoveDecision.STOP_AT_EMPTY : MoveDecision.CONTINUE;
     }
 
-    public abstract int getScoreValue();
+    // public abstract int getScoreValue();
 }

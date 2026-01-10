@@ -1,4 +1,4 @@
-package com.code.controller.board;
+package com.code.controller;
 
 import com.code.config.GameConstants;
 import javafx.fxml.FXML;

@@ -1,7 +1,6 @@
-package com.code.controller.input;
+package com.code.util.ui;
 
 import com.code.config.GameConstants;
-import com.code.controller.board.BoardUIService;
 import com.code.model.game.OAnQuanGame;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.KeyCode;
@@ -65,15 +64,7 @@ public class GameInputHandler {
     }
 
     private boolean isValidSelection(int squareId) {
-        if (squareId == GameConstants.MANDARIN_BOX_1 || squareId == GameConstants.MANDARIN_BOX_2) {
-            return false;
-        }
-
-        if (gameModel.getSquareStones(squareId) == 0) {
-            return false;
-        }
-
-        return gameModel.isCurrentPlayerOwnsSquare(squareId);
+        return gameModel.canSelectSquare(squareId);
     }
 
     private boolean resolveDirection(int squareId, boolean isRightArrow) {

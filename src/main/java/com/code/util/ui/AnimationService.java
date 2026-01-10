@@ -1,7 +1,6 @@
-package com.code.controller.animation;
+package com.code.util.ui;
 
 import com.code.config.GameConstants;
-import com.code.controller.board.BoardUIService;
 import com.code.model.game.MoveStep;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -16,14 +15,18 @@ import java.util.List;
 public class AnimationService {
 
     private final ImageView handCursor;
-    private final BoardUIService boardUIService;
+    private final java.util.function.Function<Integer, javafx.scene.Node> nodeProvider;
+    private final java.util.function.BiConsumer<Integer, Integer> stoneUpdater;
     private boolean isAnimating = false;
     private Image imgHandOpen;
     private Image imgHandClosed;
 
-    public AnimationService(ImageView handCursor, BoardUIService boardUIService) {
+    public AnimationService(ImageView handCursor,
+            java.util.function.Function<Integer, javafx.scene.Node> nodeProvider,
+            java.util.function.BiConsumer<Integer, Integer> stoneUpdater) {
         this.handCursor = handCursor;
-        this.boardUIService = boardUIService;
+        this.nodeProvider = nodeProvider;
+        this.stoneUpdater = stoneUpdater;
         loadHandImages();
     }
 
@@ -56,7 +59,7 @@ public class AnimationService {
 
         for (MoveStep step : history) {
             KeyFrame kf = new KeyFrame(Duration.millis(delayTime), e -> {
-                boardUIService.setStones(step.getSquareId(), step.getStones());
+                stoneUpdater.accept(step.getSquareId(), step.getStones());
                 moveHandToSquare(step.getSquareId());
             });
             timeline.getKeyFrames().add(kf);
@@ -78,7 +81,7 @@ public class AnimationService {
     }
 
     private void moveHandToSquare(int squareId) {
-        Parent squareNode = boardUIService.getSquareRootNode(squareId);
+        javafx.scene.Node squareNode = nodeProvider.apply(squareId);
         if (squareNode == null)
             return;
 

@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import com.code.util.managers.MusicManager;
 
 import java.util.Optional;
 
@@ -20,7 +21,7 @@ public class MainMenuController {
 
     @FXML
     public void initialize() {
-        com.code.controller.managers.MusicManager.getInstance().attachMusicButton(btnMusic);
+        MusicManager.getInstance().attachMusicButton(btnMusic);
 
         btnStart.setOnAction(e -> handleStartGame());
         btnHelp.setOnAction(e -> handleHelp());

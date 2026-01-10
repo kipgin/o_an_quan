@@ -138,6 +138,31 @@ public class OAnQuanGame {
         return board.getSquare(squareId).getStones();
     }
 
+    public boolean canSelectSquare(int squareId) {
+        if (isGameOver)
+            return false;
+        if (squareId < 0 || squareId >= GameConstants.TOTAL_SQUARES)
+            return false;
+
+        if (squareId == GameConstants.MANDARIN_BOX_1 || squareId == GameConstants.MANDARIN_BOX_2) {
+            return false;
+        }
+
+        if (getSquareStones(squareId) == 0) {
+            return false;
+        }
+
+        return isCurrentPlayerOwnsSquare(squareId);
+    }
+
+    public java.util.Map<Integer, Integer> getBoardSnapshot() {
+        java.util.Map<Integer, Integer> snapshot = new java.util.HashMap<>();
+        for (int i = 0; i < GameConstants.TOTAL_SQUARES; i++) {
+            snapshot.put(i, getSquareStones(i));
+        }
+        return snapshot;
+    }
+
     public boolean isCurrentPlayerOwnsSquare(int squareId) {
         if (currentPlayer.getSide() == PlayerSide.BOTTOM_SIDE) {
             return squareId >= GameConstants.P1_START_INDEX && squareId <= GameConstants.P1_END_INDEX;

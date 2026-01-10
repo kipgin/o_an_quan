@@ -1,4 +1,4 @@
-package com.code.controller.managers;
+package com.code.util.managers;
 
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;

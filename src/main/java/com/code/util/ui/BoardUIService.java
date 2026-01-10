@@ -1,7 +1,8 @@
-package com.code.controller.board;
+package com.code.util.ui;
 
 import com.code.config.GameConstants;
 import com.code.model.game.OAnQuanGame;
+import com.code.controller.SquareController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.layout.GridPane;
@@ -37,7 +38,6 @@ public class BoardUIService {
                         GameConstants.CITIZEN_COLSPAN, GameConstants.CITIZEN_ROWSPAN, onSquareClick, onArrowClick);
             }
 
-           
             for (int i = 0; i < GameConstants.CITIZENS_PER_SIDE; i++) {
                 int squareId = i; // P1 squares: 0, 1, 2, 3, 4
                 loadAndAddSquare(squareId, false, i + 1, 1,
@@ -61,7 +61,6 @@ public class BoardUIService {
             sqCtrl.setMirrored(true);
         }
 
-        
         squareNode.setOnMouseClicked(e -> {
             if (!(e.getTarget() instanceof ImageView)) {
                 onSquareClick.accept(id);
@@ -74,9 +73,12 @@ public class BoardUIService {
         squareControllerMap.put(id, sqCtrl);
     }
 
-    public void updateBoardStones(OAnQuanGame gameModel) {
+    public void updateBoardStones(Map<Integer, Integer> squareStones) {
         for (Map.Entry<Integer, SquareController> entry : squareControllerMap.entrySet()) {
-            entry.getValue().setStones(gameModel.getSquareStones(entry.getKey()));
+            Integer stones = squareStones.get(entry.getKey());
+            if (stones != null) {
+                entry.getValue().setStones(stones);
+            }
         }
     }
 
@@ -139,18 +141,13 @@ public class BoardUIService {
         return null;
     }
 
-    public void updateSquareHoverability(OAnQuanGame gameModel) {
+    public void updateSquareHoverability(Predicate<Integer> canSelectValidator) {
         for (Map.Entry<Integer, SquareController> entry : squareControllerMap.entrySet()) {
             int id = entry.getKey();
             SquareController ctrl = entry.getValue();
 
-            if (id == GameConstants.MANDARIN_BOX_1 || id == GameConstants.MANDARIN_BOX_2) {
-                ctrl.setHoverEnabled(false);
-            } else {
-                boolean isCurrentPlayerSquare = gameModel.isCurrentPlayerOwnsSquare(id);
-                boolean hasStones = gameModel.getSquareStones(id) > 0;
-                ctrl.setHoverEnabled(isCurrentPlayerSquare && hasStones);
-            }
+            boolean canSelect = canSelectValidator.test(id);
+            ctrl.setHoverEnabled(canSelect);
         }
     }
 

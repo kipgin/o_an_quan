@@ -1,4 +1,4 @@
-package com.code.controller.managers;
+package com.code.util.managers;
 
 import com.code.config.GameConstants;
 import javafx.animation.KeyFrame;
