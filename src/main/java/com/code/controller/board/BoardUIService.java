@@ -32,14 +32,14 @@ public class BoardUIService {
                     GameConstants.MANDARIN_COLSPAN, GameConstants.MANDARIN_ROWSPAN, onSquareClick, onArrowClick);
 
             for (int i = 0; i < GameConstants.CITIZENS_PER_SIDE; i++) {
-                int squareId = 10 - i; 
+                int squareId = 10 - i;
                 loadAndAddSquare(squareId, false, i + 1, 0,
                         GameConstants.CITIZEN_COLSPAN, GameConstants.CITIZEN_ROWSPAN, onSquareClick, onArrowClick);
             }
 
-
+           
             for (int i = 0; i < GameConstants.CITIZENS_PER_SIDE; i++) {
-                int squareId = i + 1; 
+                int squareId = i; // P1 squares: 0, 1, 2, 3, 4
                 loadAndAddSquare(squareId, false, i + 1, 1,
                         GameConstants.CITIZEN_COLSPAN, GameConstants.CITIZEN_ROWSPAN, onSquareClick, onArrowClick);
             }
@@ -58,9 +58,10 @@ public class BoardUIService {
         sqCtrl.setup(id, isMandarin);
 
         if (id == GameConstants.MANDARIN_BOX_2) {
-            squareNode.setScaleX(-1);
+            sqCtrl.setMirrored(true);
         }
 
+        
         squareNode.setOnMouseClicked(e -> {
             if (!(e.getTarget() instanceof ImageView)) {
                 onSquareClick.accept(id);

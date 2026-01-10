@@ -64,12 +64,22 @@ public class SquareController {
         }
     }
 
+    public void setMirrored(boolean mirrored) {
+        if (mirrored) {
+            rootPane.setScaleX(-1);
+            lblStones.setScaleX(-1);
+        } else {
+            rootPane.setScaleX(1);
+            lblStones.setScaleX(1);
+        }
+    }
+
     private void renderVisualStones(int amount) {
         stoneContainer.getChildren().clear();
 
         if (isMandarin && amount >= GameConstants.MANDARIN_VALUE) {
-            int bigStones = 1; 
-            int smallStones = amount - GameConstants.MANDARIN_VALUE; 
+            int bigStones = 1;
+            int smallStones = amount - GameConstants.MANDARIN_VALUE;
 
             for (int i = 0; i < bigStones; i++) {
                 stoneContainer.getChildren().add(createBigStoneNode());
